@@ -1,1 +1,12 @@
 print('hello world')
+'''Required filetypes: h5ad, mtx, rds?, tsv?, fastq?, bcl?, h5?, hdf5?, csv?'''
+import scanpy as sc
+class FileConverter:
+    def __init__(self, infile, outfile):
+        if self.filetypeidentifier(infile) == x and self.filetypeidentifier(outfile) == y:
+            pass
+            #call correct method
+    def matrix_to_h5ad(self, mtxfile):
+        pass
+    def filetypeidentifier(self, file): #necessary?
+        pass
