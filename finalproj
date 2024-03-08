@@ -11,3 +11,6 @@ class FileConverter:
     def filetypeidentifier(self, file): #necessary?
         pass
 #change
+#look online for example files
+#rds files are more general
+#look at anndata
