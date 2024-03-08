@@ -10,3 +10,4 @@ class FileConverter:
         pass
     def filetypeidentifier(self, file): #necessary?
         pass
+#change
