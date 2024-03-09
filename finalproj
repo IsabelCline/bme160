@@ -3,11 +3,13 @@ print('hello world')
 import scanpy as sc
 class FileConverter:
     def __init__(self, infile, outfile):
-        if self.filetypeidentifier(infile) == x and self.filetypeidentifier(outfile) == y:
+        if self.filetypeidentifier(infile) == 'mtx' and self.filetypeidentifier(outfile) == 'h5ad':
             pass
             #call correct method
-    def matrix_to_h5ad(self, mtxfile):
-        pass
+    def matrix_to_h5ad(self, mtxfile, h5adfile):
+        inf = sc.read_mtx(mtxfile)
+        outf = h5adfile.write(inf)
+        return outf
     def filetypeidentifier(self, file): #necessary?
         pass
 #change
