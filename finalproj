@@ -1,15 +1,50 @@
 print('hello world')
-'''Required filetypes: h5ad, mtx, rds?, tsv?, fastq?, bcl?, h5?, hdf5?, csv?'''
+'''Required filetypes: h5ad, mtx, rds, tsv.gz, txt.gz, h5, h5seurat, fastq?, bcl?, csv?'''
 import scanpy as sc
+#import streamlit as st
+#could do buttons in streamlit to select infile/outfile types, that way inputs are controlled
 class FileConverter:
-    def __init__(self, infile, outfile):
+    def __init__(self, infile, outfilename): #infiletype?, outfiletype?
         if self.filetypeidentifier(infile) == 'mtx' and self.filetypeidentifier(outfile) == 'h5ad':
-            pass
+            self.outfile = self.matrix_to_h5ad(infile, outfilename)
             #call correct method
-    def matrix_to_h5ad(self, mtxfile, h5adfile):
+    
+    # mtx infile methods:
+    def mtx_to_h5ad(self, mtxfile, h5adfilename):
         inf = sc.read_mtx(mtxfile)
-        outf = h5adfile.write(inf)
+        outf = inf.write(h5adfilename)
         return outf
+    def mtx_to_h5(self, mtxfile, h5file):
+        pass
+    def mtx_to_h5seurat(self, mtxfile, h5seuratfile):
+        pass
+    def mtx_to_loom(self, mtxfile, loomfile):
+        pass
+    def mtx_to_rds(self, mtxfile, rdsfile):
+        pass
+    def mtx_to_tsvgz(self, mtxfile, tsvgzfile):
+        pass
+    def mtx_to_txtgz(self, mtxfile, txtgzfile):
+        pass
+    
+    #h5ad infile methods:
+    def h5ad_to_h5(self, h5adfile, h5file):
+        
+    def h5ad_to_h5seurat(self, h5adfile, h5seuratfile):
+        pass
+    def h5ad_to_loom(self, h5adfile, loomfile):
+        inf = sc.read_h5ad(h5adfile) #inf is anndata file object
+        outf = inf.write_loom(loomfile)
+        return outf
+    def h5ad_to_mtx(self, h5adfile, mtxfile):
+        pass
+    def h5ad_to_rds(self, h5adfile, rdsfile):
+        pass
+    def h5ad_to_tsvgz(self, h5adfile, tsvgzfile):
+        pass
+    def h5ad_to_txtgz(self, h5adfile, txtgzfile):
+        pass
+
     def filetypeidentifier(self, file): #necessary?
         pass
 #change
