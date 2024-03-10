@@ -11,10 +11,13 @@ class FileConverter:
     
     # mtx infile methods:
     def mtx_to_h5ad(self, mtxfile, h5adfilename):
-        inf = sc.read_mtx(mtxfile)
+        inf = sc.read_mtx(mtxfile)     #  sc.read('<insert path to matrix file>', cache=True) #creating an AnnData obj, caching (optional) helps speed reading process by caching data
         outf = inf.write(h5adfilename)
         return outf
     def mtx_to_h5(self, mtxfile, h5file):
+        inf = sc.read(mtxfile, cache=True)
+        outf = inf.write(h5file) 
+        return outf
         pass
     def mtx_to_h5seurat(self, mtxfile, h5seuratfile):
         pass
