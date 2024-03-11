@@ -1,24 +1,35 @@
 print('hello world')
 '''Required filetypes: h5ad, mtx, rds, tsv.gz, txt.gz, h5, h5seurat, fastq?, bcl?, csv?'''
 import scanpy as sc
-#import streamlit as st
+import streamlit as st
 #could do buttons in streamlit to select infile/outfile types, that way inputs are controlled
 class FileConverter:
-    def __init__(self, infile, outfilename): #infiletype?, outfiletype?
-        if self.filetypeidentifier(infile) == 'mtx' and self.filetypeidentifier(outfile) == 'h5ad':
-            self.outfile = self.matrix_to_h5ad(infile, outfilename)
+    FileConverter.supported_formats = ['h5ad', 'mtx', 'csv', 'txt']
+    def __init__(self, infile, outformat): 
+        '''if self.filetypeidentifier(infile) == 'mtx' and self.filetypeidentifier(outfile) == 'h5ad':
+            self.outfile = self.matrix_to_h5ad(infile, outfilename)'''
             #call correct method
+        self.infile = infile
+        self.outformat = outformat
+        self.outfile = None
     
+    def convert_file(self):
+        #just-in-case checks; shouldn't be necessary since should be checked in streamlit
+
+        if self.outformat not in FileConverter.supported_formats:
+            st.error(f'Output format '{self.outformat}' is not supported.')
+    
+
     # mtx infile methods:
-    def mtx_to_h5ad(self, mtxfile, h5adfilename):
+    '''def mtx_to_h5ad(self, mtxfile, h5adfilename):
+        #with open mtxfile as mtx:
         inf = sc.read_mtx(mtxfile)     #could create an AnnData obj, caching data (optional) helps speed reading process 
         outf = inf.write(h5adfilename)
         return outf
     def mtx_to_h5(self, mtxfile, h5file):
-        inf = sc.read(mtxfile)
+        inf = sc.read_mtx(mtxfile)
         outf = inf.write(h5file) 
         return outf
-        pass
     def mtx_to_h5seurat(self, mtxfile, h5seuratfile):
         pass
     def mtx_to_loom(self, mtxfile, loomfile):
@@ -49,7 +60,7 @@ class FileConverter:
         pass
 
     def filetypeidentifier(self, file): #necessary?
-        pass
+        pass'''
 #change
 #look online for example files
 #rds files are more general
