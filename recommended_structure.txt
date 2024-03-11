@@ -31,6 +31,10 @@ class FileConverter:
                 data = pd.read_csv(self.input_file)
             elif input_ext == 'txt':
                 data = pd.read_csv(self.input_file, sep='\t')
+            elif input_ext == 'mtx':
+                data = pd.read_mtx(self.input_file)
+            elif input_ext == 'h5ad':
+                data = pd.read_h5ad(self.input_file)
             elif input_ext == 'whatever_file'
                 data = self.whatever_file_reader_method(self.input_file)
             output_filename = os.path.splitext(self.input_file)[0] + f".{self.output_format}"
@@ -40,6 +44,10 @@ class FileConverter:
                 data.to_csv(output_filename, index=False)
             elif self.output_format == 'txt':
                 data.to_csv(output_filename, sep='\t', index=False)
+            elif self.output_format == 'mtx':
+                data.to_csv(output_filename, index=False)
+            elif self.output_format == 'h5ad':
+                data.to_csv(output_filename, index=False)
             elif self.output_format =="whatever_output_format":
                 whatever_file_write_method(data, "whatever_output_format")
 
