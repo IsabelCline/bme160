@@ -3,6 +3,7 @@ print('hello world')
 import scanpy as sc
 import streamlit as st
 #could do buttons in streamlit to select infile/outfile types, that way inputs are controlled
+# st.download_button("Download file", file) 
 class FileConverter:
     FileConverter.supported_formats = ['h5ad', 'mtx', 'csv', 'txt']
     def __init__(self, infile, outformat): 
