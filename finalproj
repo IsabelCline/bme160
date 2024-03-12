@@ -19,7 +19,7 @@ class FileConverter:
     
     #methods for reading/writing that aren't given in sc
     def txt_file_write(self, fileobj, separator):
-        return fileobj.write_csvs(self.outfile, sep = separator) #reusing 
+        return fileobj.write_csvs(self.outfile, sep = separator) #reusing csv method with defined separator
 
     def convert_file(self):
         #just-in-case checks; shouldn't be necessary since should be checked in streamlit
@@ -34,12 +34,14 @@ class FileConverter:
             return
         
         try:
+            #reading
             if input_ext == 'csv':
                 data = sc.read_csv(self.infile)
             #cont. for supported file types
  
             self.outfile = os.path.splitext(self.infile)[0] + f'.{self.outformat}'
             
+            #writing
             if self.outformat == 'csv':
                 data.write_csvs(self.outfile) #could also use pd.to_csv here
             #cont. for supported file types
