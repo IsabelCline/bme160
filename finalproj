@@ -20,6 +20,9 @@ class FileConverter:
     #methods for reading/writing that aren't given in sc
     def txt_file_write(self, fileobj, separator):
         return fileobj.write_csvs(self.outfile, sep = separator) #reusing csv method with defined separator
+    
+    def mtx_file_write(self):
+        pass #not really sure how to write this one. maybe utilize scipy?
 
     def convert_file(self):
         #just-in-case checks; shouldn't be necessary since should be checked in streamlit
@@ -46,7 +49,7 @@ class FileConverter:
                 data.write_csvs(self.outfile) #could also use pd.to_csv here
             #cont. for supported file types
             if self.outformat == 'txt':
-                sep = '\t' #default separator
+                sep = '\t' #default separator. if used this is essentially a .tsv file
                 separator_selection = st.selectbox('Select separator for data (default is tab):', ['Comma', 'Tab', '1 space', '2 spaces', '3 spaces'])
                 if separator_selection == 'Comma':
                     sep = ','
