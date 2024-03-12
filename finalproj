@@ -48,6 +48,27 @@ class FileConverter:
         except Exception as e:
             st.error(f'Error converting file: {e}')
     
+    '''
+    Available read methods:
+    sc.read_10x_h5 #read 10x genomics formatted hdf5 file
+    sc.read_10x_mtx #10x genomics formatted mtx file
+    sc.read_h5ad
+    sc.read_csv #csv = comma separated values. essentially same as read_text but delimiter is ','
+    #read_csv available in pandas as well
+    sc.read_excel #if we want to build in xslx files, not sure #available in pandas
+    sc.read_hdf #.h5 (hdf5) file #available in pandas as well
+    sc.read_loom
+    sc.read_mtx
+    sc.read_text #can set delimiter value (default none), may be useful for files that are similar but just have different delimiters
+    #all available in anndata as well, are essentially just copied from anndata
+
+    Available write methods:
+    [anndata file object].write_csvs(filename) #write to csv file
+    [anndata file object].write_loom(filename)
+    [adata fileobj].write_h5ad(filename) #.write() does the same thing?
+
+    Will have to write methods for the ones not listed here. Some may be very similar to ones we already have so could reuse
+    '''
     
     # mtx infile methods:
     '''def mtx_to_h5ad(self, mtxfile, h5adfilename):
