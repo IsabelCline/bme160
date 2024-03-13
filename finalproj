@@ -22,7 +22,18 @@ class FileConverter:
         return fileobj.write_csvs(self.outfile, sep = separator) #reusing csv method with defined separator
     
     def mtx_file_write(self):
-        pass #not really sure how to write this one. maybe utilize scipy?
+        #write header?
+        self.outfile.write(f'{data.AnnData.n_obs} {data.AnnData.n_var}')
+        for row in data.AnnData.n_obs: #cells
+            for col in data.AnnData.n_var: #genes
+                val = AnnData.X[row, col]
+                self.outfile.write(f'{row} {col} {val}')
+        yield self.outfile
+        #then create the tsv files with gene names and cell names?
+        return genenames.tsv, cellnames.tsv #or smth along those lines
+        
+        
+        #pass #not really sure how to write this one. maybe utilize scipy?
 
     def convert_file(self):
         #just-in-case checks; shouldn't be necessary since should be checked in streamlit
