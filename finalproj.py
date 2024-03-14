@@ -39,12 +39,12 @@ class FileConverter:
         #just-in-case checks; shouldn't be necessary since should be checked in streamlit
 
         if self.outformat not in FileConverter.supported_formats:
-            st.error(f'Output format '{self.outformat}' is not supported.')
+            st.error(f'Output format {self.outformat} is not supported.')
             return 
 
         input_ext = os.path.splitext(self.infile)[1][1:].lower()
         if input_ext not in FileConverter.supported_formats:
-            st.error(f'Output format '{self.outformat}' is not supported.')
+            st.error(f'Output format {self.outformat} is not supported.')
             return
         
         try:
