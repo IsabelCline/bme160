@@ -1,5 +1,5 @@
-print('hello world')
-'''Required filetypes: h5ad, mtx, rds, tsv.gz, txt.gz, h5, h5seurat, fastq?, bcl?, csv?'''
+#print('hello world')
+#'''Required filetypes: h5ad, mtx, rds, tsv.gz, txt.gz, h5, h5seurat, fastq?, bcl?, csv?'''
 #!pip install scanpy
 import scanpy as sc
 import streamlit as st
@@ -9,7 +9,7 @@ import pandas as pd #needed?
 #could do buttons in streamlit to select infile/outfile types, that way inputs are controlled
 # st.download_button("Download file", file) 
 class FileConverter:
-    FileConverter.supported_formats = ['h5ad', 'mtx', 'csv', 'txt']
+    supported_formats = ['h5ad', 'mtx', 'csv', 'txt']
     def __init__(self, infile, outformat): 
         '''if self.filetypeidentifier(infile) == 'mtx' and self.filetypeidentifier(outfile) == 'h5ad':
             self.outfile = self.matrix_to_h5ad(infile, outfilename)'''
@@ -80,70 +80,91 @@ class FileConverter:
 
         except Exception as e:
             st.error(f'Error converting file: {e}')
-    
-    '''
-    Available read methods:
-    sc.read_10x_h5 #read 10x genomics formatted hdf5 file
-    sc.read_10x_mtx #10x genomics formatted mtx file
-    sc.read_h5ad
-    sc.read_csv #csv = comma separated values. essentially same as read_text but delimiter is ','
-    #read_csv available in pandas as well
-    sc.read_excel #if we want to build in xslx files, not sure #available in pandas
-    sc.read_hdf #.h5 (hdf5) file #available in pandas as well
-    sc.read_loom
-    sc.read_mtx
-    sc.read_text #can set delimiter value (default none), may be useful for files that are similar but just have different delimiters
-    #all available in anndata as well, are essentially just copied from anndata
+def run():
+    st.title('Single-Cell Gene Expression Data File Converter')
+    st.markdown(
+        '''Welcome to the single cell gene expression data
+        file converter. Currently supported formats are: csv, txt, h5ad, and mtx.
+        Get started by uploading your file below. '''
+    )
+    input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx'])
+    if input_file is not None:
+        output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx'])
+        if st.button("Convert File"):
+            converter = FileConverter(input_file.name, output_format)
+            converter.convert_file()
 
-    Available write methods:
-    [anndata file object].write_csvs(filename) #write to csv file
-    [anndata file object].write_loom(filename)
-    [adata fileobj].write_h5ad(filename) #.write() does the same thing?
+            if converter.output_file:
+                st.download_button(
+                    label=f"Download {converter.output_file}",
+                    data=open(converter.output_file, 'rb').read(),
+                    file_name=converter.output_file,
+                )
+if __name__ == '__main__':
+    run()
+    # '''
+    # Available read methods:
+    # sc.read_10x_h5 #read 10x genomics formatted hdf5 file
+    # sc.read_10x_mtx #10x genomics formatted mtx file
+    # sc.read_h5ad
+    # sc.read_csv #csv = comma separated values. essentially same as read_text but delimiter is ','
+    # #read_csv available in pandas as well
+    # sc.read_excel #if we want to build in xslx files, not sure #available in pandas
+    # sc.read_hdf #.h5 (hdf5) file #available in pandas as well
+    # sc.read_loom
+    # sc.read_mtx
+    # sc.read_text #can set delimiter value (default none), may be useful for files that are similar but just have different delimiters
+    # #all available in anndata as well, are essentially just copied from anndata
 
-    Will have to write methods for the ones not listed here. Some may be very similar to ones we already have so could reuse
-    '''
+    # Available write methods:
+    # [anndata file object].write_csvs(filename) #write to csv file
+    # [anndata file object].write_loom(filename)
+    # [adata fileobj].write_h5ad(filename) #.write() does the same thing?
+
+    # Will have to write methods for the ones not listed here. Some may be very similar to ones we already have so could reuse
+    # '''
     
-    # mtx infile methods:
-    '''def mtx_to_h5ad(self, mtxfile, h5adfilename):
-        #with open mtxfile as mtx:
-        inf = sc.read_mtx(mtxfile)     #could create an AnnData obj, caching data (optional) helps speed reading process 
-        outf = inf.write(h5adfilename)
-        return outf
-    def mtx_to_h5(self, mtxfile, h5file):
-        inf = sc.read_mtx(mtxfile)
-        outf = inf.write(h5file) 
-        return outf
-    def mtx_to_h5seurat(self, mtxfile, h5seuratfile):
-        pass
-    def mtx_to_loom(self, mtxfile, loomfile):
-        pass
-    def mtx_to_rds(self, mtxfile, rdsfile):
-        pass
-    def mtx_to_tsvgz(self, mtxfile, tsvgzfile):
-        pass
-    def mtx_to_txtgz(self, mtxfile, txtgzfile):
-        pass
+    # # mtx infile methods:
+    # '''def mtx_to_h5ad(self, mtxfile, h5adfilename):
+    #     #with open mtxfile as mtx:
+    #     inf = sc.read_mtx(mtxfile)     #could create an AnnData obj, caching data (optional) helps speed reading process 
+    #     outf = inf.write(h5adfilename)
+    #     return outf
+    # def mtx_to_h5(self, mtxfile, h5file):
+    #     inf = sc.read_mtx(mtxfile)
+    #     outf = inf.write(h5file) 
+    #     return outf
+    # def mtx_to_h5seurat(self, mtxfile, h5seuratfile):
+    #     pass
+    # def mtx_to_loom(self, mtxfile, loomfile):
+    #     pass
+    # def mtx_to_rds(self, mtxfile, rdsfile):
+    #     pass
+    # def mtx_to_tsvgz(self, mtxfile, tsvgzfile):
+    #     pass
+    # def mtx_to_txtgz(self, mtxfile, txtgzfile):
+    #     pass
     
-    #h5ad infile methods:
-    def h5ad_to_h5(self, h5adfile, h5file):
+    # #h5ad infile methods:
+    # def h5ad_to_h5(self, h5adfile, h5file):
         
-    def h5ad_to_h5seurat(self, h5adfile, h5seuratfile):
-        pass
-    def h5ad_to_loom(self, h5adfile, loomfile):
-        inf = sc.read_h5ad(h5adfile) #inf is anndata file object
-        outf = inf.write_loom(loomfile)
-        return outf
-    def h5ad_to_mtx(self, h5adfile, mtxfile):
-        pass
-    def h5ad_to_rds(self, h5adfile, rdsfile):
-        pass
-    def h5ad_to_tsvgz(self, h5adfile, tsvgzfile):
-        pass
-    def h5ad_to_txtgz(self, h5adfile, txtgzfile):
-        pass
+    # def h5ad_to_h5seurat(self, h5adfile, h5seuratfile):
+    #     pass
+    # def h5ad_to_loom(self, h5adfile, loomfile):
+    #     inf = sc.read_h5ad(h5adfile) #inf is anndata file object
+    #     outf = inf.write_loom(loomfile)
+    #     return outf
+    # def h5ad_to_mtx(self, h5adfile, mtxfile):
+    #     pass
+    # def h5ad_to_rds(self, h5adfile, rdsfile):
+    #     pass
+    # def h5ad_to_tsvgz(self, h5adfile, tsvgzfile):
+    #     pass
+    # def h5ad_to_txtgz(self, h5adfile, txtgzfile):
+    #     pass
 
-    def filetypeidentifier(self, file): #necessary?
-        pass'''
+    # def filetypeidentifier(self, file): #necessary?
+    #     pass'''
 #change
 #look online for example files
 #rds files are more general
