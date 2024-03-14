@@ -24,11 +24,15 @@ class FileConverter:
     
     def mtx_file_write(self):
         #write header?
-        self.outfile.write(f'{data.AnnData.n_obs} {data.AnnData.n_var}')
+        nonzero = 0
+        self.outfile.write(f'{data.AnnData.n_obs} {data.AnnData.n_var}') #should also write number of nonzero entries - requires count
         for row in data.AnnData.n_obs: #cells
             for col in data.AnnData.n_var: #genes
                 val = AnnData.X[row, col]
-                self.outfile.write(f'{row} {col} {val}')
+                if int(val) != 0:
+                    nonzero += 1
+                    self.outfile.write(f'{row} {col} {val}')
+                    #need a sort function in here somewhere?
         yield self.outfile
         #then create the tsv files with gene names and cell names?
         return genenames.tsv, cellnames.tsv #or smth along those lines
@@ -80,11 +84,11 @@ class FileConverter:
 
         except Exception as e:
             st.error(f'Error converting file: {e}')
-def run():
+def run(): #main() analog for st
     st.title('Single-Cell Gene Expression Data File Converter')
     st.markdown(
         '''Welcome to the single cell gene expression data
-        file converter. Currently supported formats are: csv, txt, h5ad, and mtx.
+        file converter. Currently supported formats are: csv, txt, and mtx.
         Get started by uploading your file below. '''
     )
     input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx'])
