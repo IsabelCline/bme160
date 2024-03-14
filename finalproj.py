@@ -1,6 +1,6 @@
 print('hello world')
 '''Required filetypes: h5ad, mtx, rds, tsv.gz, txt.gz, h5, h5seurat, fastq?, bcl?, csv?'''
-pip install scanpy
+#pip install scanpy
 import scanpy as sc
 import streamlit as st
 import os
