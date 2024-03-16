@@ -10,20 +10,19 @@ import pandas as pd #needed?
 # st.download_button("Download file", file) 
 class FileConverter:
     supported_formats = ['h5ad', 'mtx', 'csv', 'txt']
-    def __init__(self, infile, outformat): 
+    def __init__(self, infile, outformat, sep): 
         '''if self.filetypeidentifier(infile) == 'mtx' and self.filetypeidentifier(outfile) == 'h5ad':
             self.outfile = self.matrix_to_h5ad(infile, outfilename)'''
             #call correct method
         self.infile = infile
         self.outformat = outformat
         self.outfile = None
+        self.sep = sep
     
     #methods for reading/writing that aren't given in sc
     def txt_file_write(self, fileobj, separator):
         return fileobj.write_csvs(self.outfile, sep = separator) #reusing csv method with defined separator
     
-    def mtx_nonzero(self):
-
     def mtx_file_write(self):
         #could build in a way to let user specify header, but seems standard?
         self.outfile.writelines(['%%MatrixMarket matrix coordinate integer general', 'placeholder']) #this seems standard, is this right?
@@ -74,18 +73,7 @@ class FileConverter:
                 data.write_csvs(self.outfile) #could also use pd.to_csv here
             #cont. for supported file types
             if self.outformat == 'txt':
-                sep = '\t' #default separator. if used this is essentially a .tsv file
-                separator_selection = st.selectbox('Select separator for data (default is tab):', ['Comma', 'Tab', '1 space', '2 spaces', '3 spaces'])
-                if separator_selection == 'Comma':
-                    sep = ','
-                elif separator_selection == '1 space':
-                    sep = ' '
-                elif separator_selection == '2 spaces':
-                    sep = '  '
-                elif separator_selection == '3 spaces':
-                    sep = '   '
-                
-                self.txt_file_write(data, sep)
+                self.txt_file_write(data, self.sep)
             
             
 
@@ -102,12 +90,22 @@ def run(): #main() analog for st
     )
     input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx'])
     if input_file is not None:
+        sep = ''
         output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx'])
         if output_format == 'txt':
-            
+            sep = '\t' #default separator. if used this is essentially a .tsv file
+            separator_selection = st.selectbox('Select separator for data (default is tab):', ['Comma', 'Tab', '1 space', '2 spaces', '3 spaces'])
+            if separator_selection == 'Comma':
+                sep = ','
+            elif separator_selection == '1 space':
+                sep = ' '
+            elif separator_selection == '2 spaces':
+                sep = '  '
+            elif separator_selection == '3 spaces':
+                sep = '   '
 
         if st.button("Convert File"):
-            converter = FileConverter(input_file.name, output_format)
+            converter = FileConverter(input_file.name, output_format, sep)
             converter.convert_file()
 
             if converter.output_file:
