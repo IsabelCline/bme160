@@ -65,7 +65,17 @@ class FileConverter:
             if input_ext == 'csv':
                 data = sc.read_csv(self.infile)
             #cont. for supported file types
- 
+            if input_ext == 'txt':
+                data = sc.read_text(self.infile)
+            if input_ext == 'h5ad':
+                data = sc.read_h5ad(self.infile)
+            if input_ext == 'mtx':
+                data = sc.read_mtx(self.infile)
+            if input_ext == 'hdf5':
+                data = sc.read_10x_h5(self.infile)  #read 10x genomics formatted hdf5 file
+            if input_ext == 'hdf5':
+                data = sc.read_10x_h5(self.infile)  # sc.read_10x_mtx #10x genomics formatted mtx file
+            
             self.outfile = os.path.splitext(self.infile)[0] + f'.{self.outformat}'
             
             #writing
@@ -74,6 +84,11 @@ class FileConverter:
             #cont. for supported file types
             if self.outformat == 'txt':
                 self.txt_file_write(data, self.sep)
+            if self.outformat == 'h5ad':
+                self.txt_file_h5ad(data, self.sep)
+            if self.outformat == 'mtx':
+                # to mtx outfile format
+                # self.txt_file_mtx(data, self.sep)
             
             
 
