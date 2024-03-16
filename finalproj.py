@@ -71,10 +71,17 @@ class FileConverter:
                 data = sc.read_h5ad(self.infile)
             if input_ext == 'mtx':
                 data = sc.read_mtx(self.infile)
+            # if input_ext == 'mtx':
+            #     data = sc.read_10x_mtx(self.infile)  # sc.read_10x_mtx #10x genomics formatted mtx file
             if input_ext == 'hdf5':
-                data = sc.read_10x_h5(self.infile)  #read 10x genomics formatted hdf5 file
-            if input_ext == 'hdf5':
-                data = sc.read_10x_h5(self.infile)  # sc.read_10x_mtx #10x genomics formatted mtx file
+                data = sc.read_hdf(self.infile)  # both for reading hd5f files, which is preferred?
+            # if input_ext == 'hdf5':
+            #     data = sc.read_10x_h5(self.infile)  #read 10x genomics formatted hdf5 file 
+            if input_ext == 'loom':         #loom formated hd5f
+                data = sc.read_loom(self.infile)
+            if input_ext == 'xslx':
+                data = sc.read_excel(self.infile)
+
             
             self.outfile = os.path.splitext(self.infile)[0] + f'.{self.outformat}'
             
