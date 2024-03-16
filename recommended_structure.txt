@@ -32,9 +32,9 @@ class FileConverter:
             elif input_ext == 'txt':
                 data = pd.read_csv(self.input_file, sep='\t')
             elif input_ext == 'mtx':
-                data = pd.read_mtx(self.input_file)
+                data = pd.read_csv(self.input_file)
             elif input_ext == 'h5ad':
-                data = pd.read_h5ad(self.input_file)
+                data = pd.read_csv(self.input_file)
             
             elif input_ext == 'whatever_file'
                 data = self.whatever_file_reader_method(self.input_file)
