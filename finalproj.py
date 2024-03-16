@@ -22,10 +22,12 @@ class FileConverter:
     def txt_file_write(self, fileobj, separator):
         return fileobj.write_csvs(self.outfile, sep = separator) #reusing csv method with defined separator
     
+    def mtx_nonzero(self):
+
     def mtx_file_write(self):
-        #write header?
+        #could build in a way to let user specify header, but seems standard?
+        self.outfile.writelines(['%%MatrixMarket matrix coordinate integer general', 'placeholder']) #this seems standard, is this right?
         nonzero = 0
-        self.outfile.write(f'{data.AnnData.n_obs} {data.AnnData.n_var}') #should also write number of nonzero entries - requires count
         for row in data.AnnData.n_obs: #cells
             for col in data.AnnData.n_var: #genes
                 val = AnnData.X[row, col]
@@ -33,8 +35,15 @@ class FileConverter:
                     nonzero += 1
                     self.outfile.write(f'{row} {col} {val}')
                     #need a sort function in here somewhere?
+        #once have counted nonzero values, then can go back and write line 2
+        self.outfile.seek(49)#sets position to right after header to write over placeholder
+        self.outfile.write(f'{data.AnnData.n_obs} {data.AnnData.n_var} {nonzero}') #go back and rewrite after nonzero has been calculated
+        
         yield self.outfile
         #then create the tsv files with gene names and cell names?
+        with open(genenames.tsv) as genes, open(cellnames.tsv) as cells:
+            genes.write(data.AnnData.var_names)
+            cells.write(data.AnnData.obs_names)
         return genenames.tsv, cellnames.tsv #or smth along those lines
         
         
@@ -94,6 +103,9 @@ def run(): #main() analog for st
     input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx'])
     if input_file is not None:
         output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx'])
+        if output_format == 'txt':
+            
+
         if st.button("Convert File"):
             converter = FileConverter(input_file.name, output_format)
             converter.convert_file()
