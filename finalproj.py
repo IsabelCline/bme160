@@ -11,7 +11,7 @@ import pandas as pd #needed?
 # st.download_button("Download file", file) 
 class FileConverter:
     supported_formats = ['h5ad', 'mtx', 'csv', 'txt', 'loom', 'tsv', 'hdf5', 'xslx']
-    def __init__(self, infile, infilename outformat, sep): 
+    def __init__(self, infile, infilename, outformat, sep): 
         '''if self.filetypeidentifier(infile) == 'mtx' and self.filetypeidentifier(outfile) == 'h5ad':
             self.outfile = self.matrix_to_h5ad(infile, outfilename)'''
             #call correct method
