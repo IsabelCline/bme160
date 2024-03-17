@@ -70,7 +70,7 @@ class FileConverter:
             elif input_ext == 'h5ad':
                 data = sc.read_h5ad(self.infile)
             elif input_ext == 'mtx':
-                data = sc.read_mtx(self.infile)
+                data = sc.read_10x_mtx(self.infile)
             # if input_ext == 'mtx':
             #     data = sc.read_10x_mtx(self.infile)  # sc.read_10x_mtx #10x genomics formatted mtx file
             elif input_ext == 'hdf5':
