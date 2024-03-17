@@ -65,21 +65,21 @@ class FileConverter:
             if input_ext == 'csv':
                 data = sc.read_csv(self.infile)
             #cont. for supported file types
-            if input_ext == 'txt':
+            elif input_ext == 'txt':
                 data = sc.read_text(self.infile)
-            if input_ext == 'h5ad':
+            elif input_ext == 'h5ad':
                 data = sc.read_h5ad(self.infile)
-            if input_ext == 'mtx':
+            elif input_ext == 'mtx':
                 data = sc.read_mtx(self.infile)
             # if input_ext == 'mtx':
             #     data = sc.read_10x_mtx(self.infile)  # sc.read_10x_mtx #10x genomics formatted mtx file
-            if input_ext == 'hdf5':
+            elif input_ext == 'hdf5':
                 data = sc.read_hdf(self.infile)  # both for reading hd5f files, which is preferred?
             # if input_ext == 'hdf5':
             #     data = sc.read_10x_h5(self.infile)  #read 10x genomics formatted hdf5 file 
-            if input_ext == 'loom':         #loom formated hd5f
+            elif input_ext == 'loom':         #loom formated hd5f
                 data = sc.read_loom(self.infile)
-            if input_ext == 'xslx':
+            elif input_ext == 'xslx':
                 data = sc.read_excel(self.infile)
 
             
@@ -88,14 +88,16 @@ class FileConverter:
             #writing
             if self.outformat == 'csv':
                 data.write_csvs(self.outfile) #could also use pd.to_csv here
-            #cont. for supported file types
-            if self.outformat == 'txt':
+            elif self.outformat == 'txt':
                 self.txt_file_write(data, self.sep)
-            if self.outformat == 'h5ad':
-                self.txt_file_h5ad(data, self.sep)
-            if self.outformat == 'mtx':
+            elif self.outformat == 'h5ad':
+                data.write_h5ad(self.outfile)
+            elif self.outformat == 'mtx':
                 # to mtx outfile format
-                # self.txt_file_mtx(data, self.sep)
+                self.mtx_file_write(data)
+            elif self.outformat == 'loom':
+                data.write_loom(self.outfile)
+            
             
             
 
