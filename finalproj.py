@@ -114,9 +114,13 @@ def run(): #main() analog for st
     st.title('Single-Cell Gene Expression Data File Converter')
     st.markdown(
         '''Welcome to the single cell gene expression data
-        file converter. Currently supported formats are: csv, tsv, txt, h5ad, loom, and mtx. Excel (xslx) and hdf5 files
-        are only supported on input.
-        Get started by uploading your file below. '''
+        file converter. Your file should store a 2D matrix with cells in the rows and genes in the columns (ie. something 
+        like a .tsv file that contains only gene names is not suitable for this program).
+        Currently supported formats are: csv, tsv, txt, h5ad, loom, and mtx. 
+        Excel (xslx) and hdf5 files are only supported on input.
+        Get started by uploading your file below. 
+        
+        Larger files may take a while, depending on your internet speeds.'''
     )
     input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx', 'h5ad', 'loom', 'xslx', 'hdf5', 'tsv'])
     if input_file is not None:
@@ -133,7 +137,7 @@ def run(): #main() analog for st
                 sep = '  '
             elif separator_selection == '3 spaces':
                 sep = '   '
-
+        #write in ability to name the genes/cells file if output_format == 'mtx'
         if st.button("Convert File"):
             converter = FileConverter(input_file, input_file.name, output_format, sep)
             converter.convert_file()
