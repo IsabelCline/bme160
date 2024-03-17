@@ -81,6 +81,8 @@ class FileConverter:
                 data = sc.read_loom(self.infile)
             elif input_ext == 'xslx':
                 data = sc.read_excel(self.infile)
+            elif input_ext == 'tsv':
+                data = sc.read_csv(self.infile, sep = '\t')
 
             
             self.outfile = os.path.splitext(self.infile)[0] + f'.{self.outformat}'
@@ -97,6 +99,8 @@ class FileConverter:
                 self.mtx_file_write(data)
             elif self.outformat == 'loom':
                 data.write_loom(self.outfile)
+            elif self.outformat == 'tsv':
+                data.write_csvs(self.outfile, sep = '\t')
             
             
             
@@ -113,10 +117,10 @@ def run(): #main() analog for st
         are only supported on input.
         Get started by uploading your file below. '''
     )
-    input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx', 'h5ad', 'loom', 'xslx', 'hdf5'])
+    input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx', 'h5ad', 'loom', 'xslx', 'hdf5', 'tsv'])
     if input_file is not None:
         sep = ''
-        output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx', 'loom', 'h5ad'])
+        output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx', 'loom', 'h5ad', 'tsv'])
         if output_format == 'txt':
             sep = '\t' #default separator. if used this is essentially a .tsv file
             separator_selection = st.selectbox('Select separator for data (default is tab):', ['Comma', 'Tab', '1 space', '2 spaces', '3 spaces'])
