@@ -17,7 +17,7 @@ class FileConverter:
             #call correct method
         self.infile = infile
         self.infilename = infilename
-        print(self.infilename)
+        st.write(self.infilename)
         self.outformat = outformat
         self.outfile = None
         self.sep = sep
