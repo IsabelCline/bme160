@@ -3,6 +3,7 @@
 #!pip install scanpy
 import scanpy as sc
 import streamlit as st
+import anndata as ad
 import os
 
 import pandas as pd #needed?
