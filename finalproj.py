@@ -114,7 +114,7 @@ def run(): #main() analog for st
     st.title('Single-Cell Gene Expression Data File Converter')
     st.markdown(
         '''Welcome to the single cell gene expression data
-        file converter. Currently supported formats are: csv, txt, h5ad, loom, and mtx. Excel (xslx) and hdf5 files
+        file converter. Currently supported formats are: csv, tsv, txt, h5ad, loom, and mtx. Excel (xslx) and hdf5 files
         are only supported on input.
         Get started by uploading your file below. '''
     )
