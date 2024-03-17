@@ -82,7 +82,7 @@ class FileConverter:
             elif input_ext == 'xslx':
                 data = sc.read_excel(self.infile)
             elif input_ext == 'tsv':
-                data = sc.read_csv(self.infile, sep = '\t')
+                data = sc.read_csv(self.infile, delimiter = '\t')
 
             
             self.outfile = os.path.splitext(self.infile)[0] + f'.{self.outformat}'
