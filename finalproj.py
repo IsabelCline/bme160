@@ -145,8 +145,9 @@ def run(): #main() analog for st
             if converter.outfile:
                 st.download_button(
                     label=f"Download {converter.outfile}",
-                    data=open(converter.outfile, 'rb').read(),
-                    file_name=converter.outfile,
+                    #data=open(converter.outfile, 'rb').read(),
+                    data = converter.outfile,
+                    file_name=converter.outfile
                 )
 if __name__ == '__main__':
     run()
