@@ -137,11 +137,11 @@ def run(): #main() analog for st
             converter = FileConverter(input_file.name, output_format, sep)
             converter.convert_file()
 
-            if converter.output_file:
+            if converter.outfile:
                 st.download_button(
-                    label=f"Download {converter.output_file}",
-                    data=open(converter.output_file, 'rb').read(),
-                    file_name=converter.output_file,
+                    label=f"Download {converter.outfile}",
+                    data=open(converter.outfile, 'rb').read(),
+                    file_name=converter.outfile,
                 )
 if __name__ == '__main__':
     run()
