@@ -9,7 +9,7 @@ import pandas as pd #needed?
 #could do buttons in streamlit to select infile/outfile types, that way inputs are controlled
 # st.download_button("Download file", file) 
 class FileConverter:
-    supported_formats = ['h5ad', 'mtx', 'csv', 'txt']
+    supported_formats = ['h5ad', 'mtx', 'csv', 'txt', 'loom', 'tsv', 'hdf5', 'xslx']
     def __init__(self, infile, outformat, sep): 
         '''if self.filetypeidentifier(infile) == 'mtx' and self.filetypeidentifier(outfile) == 'h5ad':
             self.outfile = self.matrix_to_h5ad(infile, outfilename)'''
@@ -57,7 +57,7 @@ class FileConverter:
 
         input_ext = os.path.splitext(self.infile)[1][1:].lower()
         if input_ext not in FileConverter.supported_formats:
-            st.error(f'Output format {self.outformat} is not supported.')
+            st.error(f'Input format {input_ext} is not supported.')
             return
         
         try:
