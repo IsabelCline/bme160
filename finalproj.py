@@ -109,13 +109,14 @@ def run(): #main() analog for st
     st.title('Single-Cell Gene Expression Data File Converter')
     st.markdown(
         '''Welcome to the single cell gene expression data
-        file converter. Currently supported formats are: csv, txt, and mtx.
+        file converter. Currently supported formats are: csv, txt, h5ad, loom, and mtx. Excel (xslx) and hdf5 files
+        are only supported on input.
         Get started by uploading your file below. '''
     )
-    input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx'])
+    input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx', 'h5ad', 'loom', 'xslx', 'hdf5'])
     if input_file is not None:
         sep = ''
-        output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx'])
+        output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx', 'loom', 'h5ad'])
         if output_format == 'txt':
             sep = '\t' #default separator. if used this is essentially a .tsv file
             separator_selection = st.selectbox('Select separator for data (default is tab):', ['Comma', 'Tab', '1 space', '2 spaces', '3 spaces'])
