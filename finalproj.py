@@ -106,7 +106,7 @@ class FileConverter:
                 data.write_csvs(self.outfile, sep = '\t')
             
 
-            st.success(f'File converted successfully. Output file: {self.outfile}')
+            
 
         except Exception as e:
             st.error(f'Error converting file: {e}')
@@ -143,6 +143,7 @@ def run(): #main() analog for st
             converter.convert_file()
 
             if converter.outfile:
+                st.success(f'File converted successfully. Output file: {self.outfile}')
                 st.download_button(
                     label=f"Download {converter.outfile}",
                     data=open(converter.outfile, 'rb').read(),
