@@ -11,11 +11,12 @@ import pandas as pd #needed?
 # st.download_button("Download file", file) 
 class FileConverter:
     supported_formats = ['h5ad', 'mtx', 'csv', 'txt', 'loom', 'tsv', 'hdf5', 'xslx']
-    def __init__(self, infile, outformat, sep): 
+    def __init__(self, infile, infilename outformat, sep): 
         '''if self.filetypeidentifier(infile) == 'mtx' and self.filetypeidentifier(outfile) == 'h5ad':
             self.outfile = self.matrix_to_h5ad(infile, outfilename)'''
             #call correct method
         self.infile = infile
+        self.infilename = infilename
         self.outformat = outformat
         self.outfile = None
         self.sep = sep
@@ -56,7 +57,7 @@ class FileConverter:
             st.error(f'Output format {self.outformat} is not supported.')
             return 
 
-        input_ext = os.path.splitext(str(self.infile))[1][1:].lower()
+        input_ext = os.path.splitext(self.infilename)[1][1:].lower()
         if input_ext not in FileConverter.supported_formats:
             st.error(f'Input format {input_ext} is not supported.')
             return
@@ -86,7 +87,7 @@ class FileConverter:
                 data = sc.read_csv(self.infile, delimiter = '\t')
 
             
-            self.outfile = os.path.splitext(self.infile)[0] + f'.{self.outformat}'
+            self.outfile = os.path.splitext(self.infilename)[0] + f'.{self.outformat}'
             
             #writing
             if self.outformat == 'csv':
@@ -135,7 +136,7 @@ def run(): #main() analog for st
                 sep = '   '
 
         if st.button("Convert File"):
-            converter = FileConverter(input_file, output_format, sep)
+            converter = FileConverter(input_file, input_file.name, output_format, sep)
             converter.convert_file()
 
             if converter.outfile:
