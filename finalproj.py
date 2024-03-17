@@ -17,7 +17,7 @@ class FileConverter:
             #call correct method
         self.infile = infile
         self.infilename = infilename
-        st.write(self.infilename)
+        #st.write(self.infilename)
         self.outformat = outformat
         self.outfile = None
         self.sep = sep
@@ -104,8 +104,6 @@ class FileConverter:
                 data.write_loom(self.outfile)
             elif self.outformat == 'tsv':
                 data.write_csvs(self.outfile, sep = '\t')
-            
-            
             
 
             st.success(f'File converted successfully. Output file: {self.outfile}')
