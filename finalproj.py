@@ -135,7 +135,7 @@ def run(): #main() analog for st
                 sep = '   '
 
         if st.button("Convert File"):
-            converter = FileConverter(input_file.name, output_format, sep)
+            converter = FileConverter(input_file, output_format, sep)
             converter.convert_file()
 
             if converter.outfile:
