@@ -56,7 +56,7 @@ class FileConverter:
             st.error(f'Output format {self.outformat} is not supported.')
             return 
 
-        input_ext = os.path.splitext(self.infile)[1][1:].lower()
+        input_ext = os.path.splitext(str(self.infile))[1][1:].lower()
         if input_ext not in FileConverter.supported_formats:
             st.error(f'Input format {input_ext} is not supported.')
             return
