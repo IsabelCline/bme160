@@ -72,17 +72,31 @@ class FileConverter:
             elif input_ext == 'h5ad':
                 data = sc.read_h5ad(self.infile)
             elif input_ext == 'mtx':
-                
+                #create temp directory
+                #create temp files, copy files into temp files
                 import tempfile
                 import shutil
-                temp_dir = tempfile.mkdtemp()
-                print(temp_dir)
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    st.write(temp_dir)
+                    temp_infile = tempfile.TemporaryFile()
+                    temp_gf = tempfile.TemporaryFile()
+                    temp_cf = tempfile.TemporaryFile()
+
+                    shutil.copyfileobj(self.infile, temp_infile)
+                    shutil.copyfileobj(self.gf.name, temp_gf)
+                    shutil.copyfileobj(self.cf.name, temp_cf)
+
+                    shutil.move(temp_infile, temp_dir)
+                    shutil.move(temp_gf, temp_dir)
+                    shutil.move(temp_cf, temp_dir)
+                #temp_dir = tempfile.mkdtemp()
+                    st.write(temp_dir)
                 #for i in range(3):
-                shutil.move(self.infilename, temp_dir)
-                shutil.move(self.gf.name, temp_dir)
-                shutil.move(self.cf.name, temp_dir)
+                
+
+
                 #path = os.path.join(temp_dir, self.infilename) #concatenates paths instead of joining them all under one dir
-                data = sc.read_10x_mtx(temp_dir) #method requires a pathlike obj, so have to create a temp one above
+                    data = sc.read_10x_mtx(temp_dir) #method requires a pathlike obj, so have to create a temp one above
             # if input_ext == 'mtx':
             #     data = sc.read_10x_mtx(self.infile)  # sc.read_10x_mtx #10x genomics formatted mtx file
             elif input_ext == 'hdf5':
