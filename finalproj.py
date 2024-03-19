@@ -77,9 +77,14 @@ class FileConverter:
             elif input_ext == 'mtx':
                 
                 import tempfile
+                import shutil
                 temp_dir = tempfile.mkdtemp()
-                path = os.path.join(temp_dir, self.infilename).path.join(temp_dir, self.gf).path.join(temp_dir, self.cf)
-                data = sc.read_10x_mtx(path) #method requires a pathlike obj, so have to create a temp one above
+                #for i in range(3):
+                shutil.move(self.infilename, temp_dir)
+                shutil.move(self.gf.name, temp_dir)
+                shutil.move(self.cf.name, temp_dir)
+                #path = os.path.join(temp_dir, self.infilename)
+                data = sc.read_10x_mtx(temp_dir) #method requires a pathlike obj, so have to create a temp one above
             # if input_ext == 'mtx':
             #     data = sc.read_10x_mtx(self.infile)  # sc.read_10x_mtx #10x genomics formatted mtx file
             elif input_ext == 'hdf5':
