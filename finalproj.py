@@ -77,11 +77,10 @@ class FileConverter:
             elif input_ext == 'mtx':
                 gfile = st.file_uploader('Upload your tsv file containing annotated genes corresponding to the uploaded mtx file', type = ['tsv'])
                 cfile = st.file_uploader('Upload your tsv file containing cell barcodes corresponding to the uploaded mtx file', type = ['tsv'])
-                if gfile is not None and cfile is not None:
-                    import tempfile
-                    temp_dir = tempfile.mkdtemp()
-                    path = os.path.join(temp_dir, self.infilename, gfile.name, cfile.name)
-                    data = sc.read_10x_mtx(path) #method requires a pathlike obj, so have to create a temp one above
+                import tempfile
+                temp_dir = tempfile.mkdtemp()
+                path = os.path.join(temp_dir, self.infilename, gfile.name, cfile.name)
+                data = sc.read_10x_mtx(path) #method requires a pathlike obj, so have to create a temp one above
             # if input_ext == 'mtx':
             #     data = sc.read_10x_mtx(self.infile)  # sc.read_10x_mtx #10x genomics formatted mtx file
             elif input_ext == 'hdf5':
