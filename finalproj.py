@@ -85,6 +85,7 @@ class FileConverter:
                     shutil.copyfileobj(self.infile, temp_infile)
                     shutil.copyfileobj(self.gf, temp_gf)
                     shutil.copyfileobj(self.cf, temp_cf) 
+                    os.listdir(temp_dir)
 
                     #shutil.move(temp_infile.name, temp_dir)
                     #shutil.move(temp_gf, temp_dir)
@@ -93,8 +94,8 @@ class FileConverter:
                     st.write(temp_dir)
                 
 
-
-                #path = os.path.join(temp_dir, self.infilename) #concatenates paths instead of joining them all under one dir
+                    #find(matrix) and return everything that comes before
+                    #path = os.path.join(temp_dir, self.infilename) #concatenates paths instead of joining them all under one dir
                     data = sc.read_10x_mtx(temp_dir) #method requires a pathlike obj, so have to create a temp one above
             # if input_ext == 'mtx':
             #     data = sc.read_10x_mtx(self.infile)  # sc.read_10x_mtx #10x genomics formatted mtx file
@@ -145,7 +146,7 @@ def run(): #main() analog for st
     st.write('Larger files may take a while, depending on your internet speeds.')
         
     st.write("If you are trying to convert an mtx file into another format, you will be prompted to upload your gene and cell/barcode tsv files after uploading your mtx file."
-    )
+    These should have the same prefix as the mtx file.)
     input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx', 'h5ad', 'loom', 'xslx', 'hdf5', 'tsv'])
     if input_file is not None:
         sep = ''
