@@ -11,7 +11,7 @@ import pandas as pd #needed?
 # st.download_button("Download file", file) 
 class FileConverter:
     supported_formats = ['h5ad', 'mtx', 'csv', 'txt', 'loom', 'tsv', 'hdf5', 'xslx']
-    def __init__(self, infile, infilename, outformat, sep): 
+    def __init__(self, infile, infilename, outformat, sep, gfname = None, cfname = None): 
         '''if self.filetypeidentifier(infile) == 'mtx' and self.filetypeidentifier(outfile) == 'h5ad':
             self.outfile = self.matrix_to_h5ad(infile, outfilename)'''
             #call correct method
@@ -21,6 +21,8 @@ class FileConverter:
         self.outformat = outformat
         self.outfile = None
         self.sep = sep
+        self.gfname = gfname #only used in the case that outfile = mtx
+        self.cfname = cfname # ""
     
     #methods for reading/writing that aren't given in sc
     def txt_file_write(self, fileobj, separator):
@@ -138,8 +140,11 @@ def run(): #main() analog for st
             elif separator_selection == '3 spaces':
                 sep = '   '
         #write in ability to name the genes/cells file if output_format == 'mtx'
+        elif output_format == 'mtx':
+            genefilename = st.text_input('Name the tsv file that will contain the names of the genes. Default is [filename]_genes.')
+            cellfilename = st.text_input('Name the tsv file that will contain the cell barcodes. Default is [filename]_barcodes.')
         if st.button("Convert File"):
-            converter = FileConverter(input_file, input_file.name, output_format, sep)
+            converter = FileConverter(input_file, input_file.name, output_format, sep, genefilename, cellfilename)
             converter.convert_file()
 
             if converter.outfile:
@@ -172,53 +177,3 @@ if __name__ == '__main__':
     # [adata fileobj].write_h5ad(filename) #.write() does the same thing?
 
     # Will have to write methods for the ones not listed here. Some may be very similar to ones we already have so could reuse
-    # '''
-    
-    # # mtx infile methods:
-    # '''def mtx_to_h5ad(self, mtxfile, h5adfilename):
-    #     #with open mtxfile as mtx:
-    #     inf = sc.read_mtx(mtxfile)     #could create an AnnData obj, caching data (optional) helps speed reading process 
-    #     outf = inf.write(h5adfilename)
-    #     return outf
-    # def mtx_to_h5(self, mtxfile, h5file):
-    #     inf = sc.read_mtx(mtxfile)
-    #     outf = inf.write(h5file) 
-    #     return outf
-    # def mtx_to_h5seurat(self, mtxfile, h5seuratfile):
-    #     pass
-    # def mtx_to_loom(self, mtxfile, loomfile):
-    #     pass
-    # def mtx_to_rds(self, mtxfile, rdsfile):
-    #     pass
-    # def mtx_to_tsvgz(self, mtxfile, tsvgzfile):
-    #     pass
-    # def mtx_to_txtgz(self, mtxfile, txtgzfile):
-    #     pass
-    
-    # #h5ad infile methods:
-    # def h5ad_to_h5(self, h5adfile, h5file):
-        
-    # def h5ad_to_h5seurat(self, h5adfile, h5seuratfile):
-    #     pass
-    # def h5ad_to_loom(self, h5adfile, loomfile):
-    #     inf = sc.read_h5ad(h5adfile) #inf is anndata file object
-    #     outf = inf.write_loom(loomfile)
-    #     return outf
-    # def h5ad_to_mtx(self, h5adfile, mtxfile):
-    #     pass
-    # def h5ad_to_rds(self, h5adfile, rdsfile):
-    #     pass
-    # def h5ad_to_tsvgz(self, h5adfile, tsvgzfile):
-    #     pass
-    # def h5ad_to_txtgz(self, h5adfile, txtgzfile):
-    #     pass
-
-    # def filetypeidentifier(self, file): #necessary?
-    #     pass'''
-#change
-#look online for example files
-#rds files are more general
-#look at anndata
-
-#from AnnData import read_h5ad (& return desired file type?)
-# anndata.read_h5ad(filename, backed=None, *, as_sparse=(), as_sparse_fmt=<class 'scipy.sparse._csr.csr_matrix'>, chunk_size=6000)[source]
