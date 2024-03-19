@@ -78,20 +78,19 @@ class FileConverter:
                 import shutil
                 with tempfile.TemporaryDirectory() as temp_dir:
                     st.write(temp_dir)
-                    temp_infile = tempfile.TemporaryFile()
-                    temp_gf = tempfile.TemporaryFile()
-                    temp_cf = tempfile.TemporaryFile()
+                    temp_infile = tempfile.TemporaryFile(dir = temp_dir)
+                    temp_gf = tempfile.TemporaryFile(dir = temp_dir)
+                    temp_cf = tempfile.TemporaryFile(dir = temp_dir)
 
                     shutil.copyfileobj(self.infile, temp_infile)
                     shutil.copyfileobj(self.gf, temp_gf)
                     shutil.copyfileobj(self.cf, temp_cf) 
 
-                    shutil.move(temp_infile, temp_dir)
-                    shutil.move(temp_gf, temp_dir)
-                    shutil.move(temp_cf, temp_dir)
-                #temp_dir = tempfile.mkdtemp()
+                    #shutil.move(temp_infile.name, temp_dir)
+                    #shutil.move(temp_gf, temp_dir)
+                    #shutil.move(temp_cf, temp_dir)
+                    #temp_dir = tempfile.mkdtemp()
                     st.write(temp_dir)
-                #for i in range(3):
                 
 
 
