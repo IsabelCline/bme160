@@ -145,8 +145,9 @@ def run(): #main() analog for st
         
     st.write('Larger files may take a while, depending on your internet speeds.')
         
-    st.write("If you are trying to convert an mtx file into another format, you will be prompted to upload your gene and cell/barcode tsv files after uploading your mtx file."
-    These should have the same prefix as the mtx file.)
+    st.write('''If you are trying to convert an mtx file into another format, you will be prompted to upload your gene 
+    and cell/barcode tsv files after uploading your mtx file.
+    These should have the same prefix as the mtx file.''')
     input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx', 'h5ad', 'loom', 'xslx', 'hdf5', 'tsv'])
     if input_file is not None:
         sep = ''
