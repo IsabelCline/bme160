@@ -85,7 +85,7 @@ class FileConverter:
                     shutil.copyfileobj(self.infile, temp_infile)
                     shutil.copyfileobj(self.gf, temp_gf)
                     shutil.copyfileobj(self.cf, temp_cf) 
-                    os.listdir(temp_dir)
+                    st.write(os.listdir(temp_dir))
 
                     #shutil.move(temp_infile.name, temp_dir)
                     #shutil.move(temp_gf, temp_dir)
