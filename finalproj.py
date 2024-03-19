@@ -11,7 +11,7 @@ import pandas as pd #needed?
 # st.download_button("Download file", file) 
 class FileConverter:
     supported_formats = ['h5ad', 'mtx', 'csv', 'txt', 'loom', 'tsv', 'hdf5', 'xslx']
-    def __init__(self, infile, infilename, outformat, sep, gfname = None, cfname = None): 
+    def __init__(self, infile, infilename, outformat, sep, gf = None, cf = None): 
         '''if self.filetypeidentifier(infile) == 'mtx' and self.filetypeidentifier(outfile) == 'h5ad':
             self.outfile = self.matrix_to_h5ad(infile, outfilename)'''
             #call correct method
@@ -21,8 +21,8 @@ class FileConverter:
         self.outformat = outformat
         self.outfile = None
         self.sep = sep
-        self.gfname = gfname #only used in the case that outfile = mtx
-        self.cfname = cfname # ""
+        self.gf = gf #only used in the case that outfile = mtx
+        self.cf = cf # ""
     
     #methods for reading/writing that aren't given in sc
     def txt_file_write(self, fileobj, separator):
@@ -75,11 +75,10 @@ class FileConverter:
             elif input_ext == 'h5ad':
                 data = sc.read_h5ad(self.infile)
             elif input_ext == 'mtx':
-                gfile = st.file_uploader('Upload your tsv file containing annotated genes corresponding to the uploaded mtx file', type = ['tsv'])
-                cfile = st.file_uploader('Upload your tsv file containing cell barcodes corresponding to the uploaded mtx file', type = ['tsv'])
+                
                 import tempfile
                 temp_dir = tempfile.mkdtemp()
-                path = os.path.join(temp_dir, self.infilename, gfile.name, cfile.name)
+                path = os.path.join(temp_dir, self.infilename, self.gf.name, self.cf.name)
                 data = sc.read_10x_mtx(path) #method requires a pathlike obj, so have to create a temp one above
             # if input_ext == 'mtx':
             #     data = sc.read_10x_mtx(self.infile)  # sc.read_10x_mtx #10x genomics formatted mtx file
@@ -129,14 +128,21 @@ def run(): #main() analog for st
         
     st.write('Larger files may take a while, depending on your internet speeds.')
         
-    st.write("If you are trying to convert an mtx file into another format, you will be prompted to upload your gene and cell/barcode tsv files after clicking 'Convert File'."
+    st.write("If you are trying to convert an mtx file into another format, you will be prompted to upload your gene and cell/barcode tsv files after uploading your mtx file."
     )
     input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx', 'h5ad', 'loom', 'xslx', 'hdf5', 'tsv'])
     if input_file is not None:
-
         sep = ''
-        genefilename = None 
-        cellfilename = None
+        gfile = None 
+        cfile = None
+
+        if os.path.splitext(input_file.name)[1][1:].lower() == 'mtx':
+            gfile = st.file_uploader('Upload your tsv file containing annotated genes corresponding to the uploaded mtx file', type = ['tsv'])
+            cfile = st.file_uploader('Upload your tsv file containing cell barcodes corresponding to the uploaded mtx file', type = ['tsv'])
+            
+
+
+        
 
         output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx', 'loom', 'h5ad', 'tsv'])
         if output_format == 'txt':
@@ -152,10 +158,10 @@ def run(): #main() analog for st
                 sep = '   '
         #write in ability to name the genes/cells file if output_format == 'mtx'
         elif output_format == 'mtx': #maybe move to after convert file?
-            genefilename = st.text_input('Name the tsv file that will contain the names of the genes. Default is [filename]_genes.', value = os.path.splitext(self.infilename)[0])
-            cellfilename = st.text_input('Name the tsv file that will contain the cell barcodes. Default is [filename]_barcodes.', value = os.path.splitext(self.infilename)[0])
+            gfile = st.text_input('Name the tsv file that will contain the names of the genes. Default is [filename]_genes.', value = os.path.splitext(self.infilename)[0])
+            cfile = st.text_input('Name the tsv file that will contain the cell barcodes. Default is [filename]_barcodes.', value = os.path.splitext(self.infilename)[0])
         if st.button("Convert File"):
-            converter = FileConverter(input_file, input_file.name, output_format, sep, genefilename, cellfilename)
+            converter = FileConverter(input_file, input_file.name, output_format, sep, gfile, cfile)
             converter.convert_file()
 
             if converter.outfile:
