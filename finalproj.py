@@ -83,8 +83,8 @@ class FileConverter:
                     temp_cf = tempfile.TemporaryFile()
 
                     shutil.copyfileobj(self.infile, temp_infile)
-                    shutil.copyfileobj(self.gf.name, temp_gf)
-                    shutil.copyfileobj(self.cf.name, temp_cf)
+                    shutil.copyfileobj(self.gf, temp_gf)
+                    shutil.copyfileobj(self.cf, temp_cf) 
 
                     shutil.move(temp_infile, temp_dir)
                     shutil.move(temp_gf, temp_dir)
