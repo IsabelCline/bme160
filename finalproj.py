@@ -125,12 +125,12 @@ def run(): #main() analog for st
         like a .tsv file that contains only gene names is not suitable for this program). 
         Currently supported formats are: csv, tsv, txt, h5ad, loom, and mtx. 
         Excel (xslx) and hdf5 files are only supported on input. 
-        Get started by uploading your file below. 
+        Get started by uploading your file below.''')
         
-        Larger files may take a while, depending on your internet speeds.
+        st.write('Larger files may take a while, depending on your internet speeds.')
         
-        If you are trying to convert an mtx file into another format, you will be prompted to upload your gene 
-        and cell/barcode tsv files after clicking 'Convert File'.'''
+        st.write("If you are trying to convert an mtx file into another format, you will be prompted to upload your gene 
+        and cell/barcode tsv files after clicking 'Convert File'.")
     )
     input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx', 'h5ad', 'loom', 'xslx', 'hdf5', 'tsv'])
     if input_file is not None:
