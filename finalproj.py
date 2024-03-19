@@ -78,7 +78,7 @@ class FileConverter:
                 
                 import tempfile
                 temp_dir = tempfile.mkdtemp()
-                path = os.path.join(temp_dir, self.infilename, self.gf.name, self.cf.name)
+                path = os.path.join(temp_dir, self.infilename).join(temp_dir, self.gf).join(temp_dir, self.cf)
                 data = sc.read_10x_mtx(path) #method requires a pathlike obj, so have to create a temp one above
             # if input_ext == 'mtx':
             #     data = sc.read_10x_mtx(self.infile)  # sc.read_10x_mtx #10x genomics formatted mtx file
