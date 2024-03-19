@@ -28,7 +28,7 @@ class FileConverter:
     def txt_file_write(self, fileobj, separator):
         return fileobj.write_csvs(self.outfile, sep = separator) #reusing csv method with defined separator
     
-    def mtx_file_write(self):
+    def mtx_file_write(self, genenames, cellnames):
         #could build in a way to let user specify header, but seems standard?
         self.outfile.writelines(['%%MatrixMarket matrix coordinate integer general', 'placeholder']) #this seems standard, is this right?
         nonzero = 0
@@ -75,7 +75,12 @@ class FileConverter:
             elif input_ext == 'h5ad':
                 data = sc.read_h5ad(self.infile)
             elif input_ext == 'mtx':
-                data = sc.read_10x_mtx(self.infile)
+                gfile = st.file_uploader('Upload your tsv file containing annotated genes corresponding to the uploaded mtx file', type = ['tsv'])
+                cfile = st.file_uploader('Upload your tsv file containing cell barcodes corresponding to the uploaded mtx file', type = ['tsv'])
+                import tempfile
+                temp_dir = tempfile.mkdtemp()
+                path = os.path.join(temp_dir, self.infilename, gfile.name, cfile.name)
+                data = sc.read_10x_mtx(path) #method requires a pathlike obj, so have to create a temp one above
             # if input_ext == 'mtx':
             #     data = sc.read_10x_mtx(self.infile)  # sc.read_10x_mtx #10x genomics formatted mtx file
             elif input_ext == 'hdf5':
@@ -114,19 +119,26 @@ class FileConverter:
             st.error(f'Error converting file: {e}')
 def run(): #main() analog for st
     st.title('Single-Cell Gene Expression Data File Converter')
-    st.markdown(
+    st.write(
         '''Welcome to the single cell gene expression data
         file converter. Your file should store a 2D matrix with cells in the rows and genes in the columns (ie. something 
-        like a .tsv file that contains only gene names is not suitable for this program).
+        like a .tsv file that contains only gene names is not suitable for this program). 
         Currently supported formats are: csv, tsv, txt, h5ad, loom, and mtx. 
-        Excel (xslx) and hdf5 files are only supported on input.
+        Excel (xslx) and hdf5 files are only supported on input. 
         Get started by uploading your file below. 
         
-        Larger files may take a while, depending on your internet speeds.'''
+        Larger files may take a while, depending on your internet speeds.
+        
+        If you are trying to convert an mtx file into another format, you will be prompted to upload your gene 
+        and cell/barcode tsv files after clicking 'Convert File'.'''
     )
     input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx', 'h5ad', 'loom', 'xslx', 'hdf5', 'tsv'])
     if input_file is not None:
+
         sep = ''
+        genefilename = None 
+        cellfilename = None
+
         output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx', 'loom', 'h5ad', 'tsv'])
         if output_format == 'txt':
             sep = '\t' #default separator. if used this is essentially a .tsv file
@@ -140,9 +152,9 @@ def run(): #main() analog for st
             elif separator_selection == '3 spaces':
                 sep = '   '
         #write in ability to name the genes/cells file if output_format == 'mtx'
-        elif output_format == 'mtx':
-            genefilename = st.text_input('Name the tsv file that will contain the names of the genes. Default is [filename]_genes.')
-            cellfilename = st.text_input('Name the tsv file that will contain the cell barcodes. Default is [filename]_barcodes.')
+        elif output_format == 'mtx': #maybe move to after convert file?
+            genefilename = st.text_input('Name the tsv file that will contain the names of the genes. Default is [filename]_genes.', value = os.path.splitext(self.infilename)[0])
+            cellfilename = st.text_input('Name the tsv file that will contain the cell barcodes. Default is [filename]_barcodes.', value = os.path.splitext(self.infilename)[0])
         if st.button("Convert File"):
             converter = FileConverter(input_file, input_file.name, output_format, sep, genefilename, cellfilename)
             converter.convert_file()
