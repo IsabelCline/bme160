@@ -137,7 +137,7 @@ class FileConverter:
             elif self.outformat == 'tsv':
                 data.write_csvs(self.outfile, sep = '\t')
             
-
+            return self.outfile
             
 
         except Exception as e:
