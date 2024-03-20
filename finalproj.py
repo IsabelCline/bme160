@@ -196,8 +196,8 @@ def run(): #main() analog for st
                 st.success(f'File converted successfully. Output file: {converter.outfile}')
                 st.download_button(
                     label=f"Download {converter.outfile}",
-                    #data=open(converter.outfile, 'rb'),
-                    data = converter.outfile,
+                    data=open(converter.outfile, 'rb').read(),
+                    #data = converter.outfile,
                     file_name=converter.outfile
                 )
 if __name__ == '__main__':
