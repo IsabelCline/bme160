@@ -10,8 +10,12 @@ import pandas as pd #needed?
 #could do buttons in streamlit to select infile/outfile types, that way inputs are controlled
 # st.download_button("Download file", file) 
 class FileConverter:
+    ''' Recieve user input for file, input file type and desired file output type. 
+        Translate file to AnnData object in order for it to be able to access AnnData methods.
+        Use Scanpy & AnnData methods to read and write file to specified output. '''
     supported_formats = ['h5ad', 'mtx', 'csv', 'txt', 'loom', 'tsv', 'hdf5', 'xslx']
     def __init__(self, infile, infilename, outformat, sep, gf = None, cf = None): 
+        ''' Initialize the file type and name for both input and output. '''
         self.infile = infile
         self.infilename = infilename
         #st.write(self.infilename)
@@ -26,6 +30,7 @@ class FileConverter:
         return fileobj.write_csvs(self.outfile, sep = separator) #reusing csv method with defined separator
     
     def mtx_file_write(self, genenames, cellnames):
+        ''' Construct a method to convert matrix files specifically. '''
         #could build in a way to let user specify header, but seems standard?
         self.outfile.writelines(['%%MatrixMarket matrix coordinate integer general', 'placeholder']) #this seems standard, is this right?
         nonzero = 0
@@ -51,6 +56,9 @@ class FileConverter:
         #pass #not really sure how to write this one. maybe utilize scipy?
 
     def convert_file(self):
+        ''' Use Try & Except to account for miscellaneous cases.
+            Try handles the cases of files that are an included type.
+            Except block returns an error message to the user so as not to crash the code when the file is not one of the included formats. '''
         #just-in-case checks; shouldn't be necessary since should be checked in streamlit
 
         if self.outformat not in FileConverter.supported_formats:
@@ -134,6 +142,7 @@ class FileConverter:
         except Exception as e:
             st.error(f'Error converting file: {e}')
 def run(): #main() analog for st
+    ''' Generate a title and welcome message for user, along with other instructions. '''
     st.title('Single-Cell Gene Expression Data File Converter')
     st.write(
         '''Welcome to the single cell gene expression data
