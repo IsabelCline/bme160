@@ -151,8 +151,8 @@ def run(): #main() analog for st
         like a .tsv file that contains only gene names is not suitable for this program). 
         Currently supported formats are: csv, tsv, txt, h5ad, and loom. 
         Excel (xslx) and hdf5 files are only supported on input.
-        MTX is a work in progress. Download button is not operational currently. 
-        Get started by uploading your file below.''')
+        MTX is a work in progress. 
+        Get started by uploading your file below. Download button is not operational currently.''')
         
     st.write('Larger files may take a while, depending on your internet speeds.')
         
