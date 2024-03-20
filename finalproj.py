@@ -198,13 +198,13 @@ def run(): #main() analog for st
                 #filecontent = BytesIO(open(converter.outfile, 'rb').read())
                 #with open(converter.outfile, 'rb') as file:
                     #filecontent = file.read()
-                st.download_button(
-                    label=f"Download {converter.outfile}",
+                #st.download_button(
+                    #label=f"Download {converter.outfile}",
                     #data=filecontent,
                     #data=open(converter.outfile, 'rb').read(),
-                    data = converted_file,
-                    file_name=converter.outfile
-                )
+                    #data = converted_file,
+                    #file_name=converter.outfile)
+                st.markdown(f'Download [converted file]({converted_file})')
 if __name__ == '__main__':
     run()
     # '''
