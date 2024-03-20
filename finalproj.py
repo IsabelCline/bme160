@@ -26,11 +26,12 @@ class FileConverter:
         self.cf = cf # ""
     
     #methods for reading/writing that aren't given in sc
-    def txt_file_write(self, fileobj, separator):
-        return fileobj.write_csvs(self.outfile, sep = separator) #reusing csv method with defined separator
+    def txt_file_write(self, adataobj, separator):
+        '''Write an AnnData object to a txt file.'''
+        return adataobj.write_csvs(self.outfile, sep = separator) #reusing csv method with defined separator
     
     def mtx_file_write(self, genenames, cellnames):
-        ''' Construct a method to convert matrix files specifically. '''
+        ''' Write an AnnData object to an mtx file, and the corresponding genes/barcodes to tsv files.'''
         #could build in a way to let user specify header, but seems standard?
         self.outfile.writelines(['%%MatrixMarket matrix coordinate integer general', 'placeholder']) #this seems standard, is this right?
         nonzero = 0
@@ -56,8 +57,8 @@ class FileConverter:
         #pass #not really sure how to write this one. maybe utilize scipy?
 
     def convert_file(self):
-        ''' Use Try & Except to account for miscellaneous cases.
-            Try handles the cases of files that are an included type.
+        ''' Call the correct methods to read and write to files of different formats.
+            Try handles the cases of files that are of an included type.
             Except block returns an error message to the user so as not to crash the code when the file is not one of the included formats. '''
         #just-in-case checks; shouldn't be necessary since should be checked in streamlit
 
@@ -142,7 +143,7 @@ class FileConverter:
         except Exception as e:
             st.error(f'Error converting file: {e}')
 def run(): #main() analog for st
-    ''' Generate a title and welcome message for user, along with other instructions. '''
+    ''' Generate the applicaton interface, with a title and welcome message for user, along with other instructions. '''
     st.title('Single-Cell Gene Expression Data File Converter')
     st.write(
         '''Welcome to the single cell gene expression data
