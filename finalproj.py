@@ -149,8 +149,9 @@ def run(): #main() analog for st
         '''Welcome to the single cell gene expression data
         file converter. Your file should store a 2D matrix with cells in the rows and genes in the columns (ie. something 
         like a .tsv file that contains only gene names is not suitable for this program). 
-        Currently supported formats are: csv, tsv, txt, h5ad, loom, and mtx. 
-        Excel (xslx) and hdf5 files are only supported on input. 
+        Currently supported formats are: csv, tsv, txt, h5ad, and loom. 
+        Excel (xslx) and hdf5 files are only supported on input.
+        MTX is a work in progress. Download button is not operational currently. 
         Get started by uploading your file below.''')
         
     st.write('Larger files may take a while, depending on your internet speeds.')
