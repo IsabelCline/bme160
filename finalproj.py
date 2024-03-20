@@ -194,9 +194,11 @@ def run(): #main() analog for st
 
             if converter.outfile:
                 st.success(f'File converted successfully. Output file: {converter.outfile}')
+                from io import BytesIO
+                filecontent = BytesIO(open(converter.outfile, 'rb').read)
                 st.download_button(
                     label=f"Download {converter.outfile}",
-                    data=open(converter.outfile, 'rb').read(),
+                    data=filecontent,
                     #data = converter.outfile,
                     file_name=converter.outfile
                 )
