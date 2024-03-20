@@ -200,7 +200,7 @@ def run(): #main() analog for st
                     #filecontent = file.read()
                 st.download_button(
                     label=f"Download {converter.outfile}",
-                    data=filecontent,
+                    #data=filecontent,
                     #data=open(converter.outfile, 'rb').read(),
                     data = converter.outfile,
                     file_name=converter.outfile
