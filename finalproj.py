@@ -190,7 +190,7 @@ def run(): #main() analog for st
             cfile = st.text_input('Name the tsv file that will contain the cell barcodes. Default is [filename]_barcodes.', value = os.path.splitext(self.infilename)[0])
         if st.button("Convert File"):
             converter = FileConverter(input_file, input_file.name, output_format, sep, gfile, cfile)
-            converter.convert_file()
+            converted_file = converter.convert_file()
 
             if converter.outfile:
                 st.success(f'File converted successfully. Output file: {converter.outfile}')
@@ -202,7 +202,7 @@ def run(): #main() analog for st
                     label=f"Download {converter.outfile}",
                     #data=filecontent,
                     #data=open(converter.outfile, 'rb').read(),
-                    data = converter.outfile,
+                    data = converted_file,
                     file_name=converter.outfile
                 )
 if __name__ == '__main__':
