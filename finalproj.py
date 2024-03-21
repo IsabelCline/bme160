@@ -83,29 +83,32 @@ class FileConverter:
             elif input_ext == 'mtx':
                 #create temp directory
                 #create temp files, copy files into temp files
-                import tempfile
-                import shutil
-                with tempfile.TemporaryDirectory() as temp_dir:
-                    st.write(temp_dir)
-                    temp_infile = tempfile.TemporaryFile(dir = temp_dir)
-                    temp_gf = tempfile.TemporaryFile(dir = temp_dir)
-                    temp_cf = tempfile.TemporaryFile(dir = temp_dir)
+                #import tempfile
+                #import shutil
+                # with tempfile.TemporaryDirectory() as temp_dir:
+                #     st.write(temp_dir)
+                #     temp_infile = tempfile.TemporaryFile(dir = temp_dir)
+                #     temp_gf = tempfile.TemporaryFile(dir = temp_dir)
+                #     temp_cf = tempfile.TemporaryFile(dir = temp_dir)
 
-                    shutil.copyfileobj(self.infile, temp_infile)
-                    shutil.copyfileobj(self.gf, temp_gf)
-                    shutil.copyfileobj(self.cf, temp_cf) 
-                    st.write(os.listdir(temp_dir))
+                #     shutil.copyfileobj(self.infile, temp_infile)
+                #     shutil.copyfileobj(self.gf, temp_gf)
+                #     shutil.copyfileobj(self.cf, temp_cf) 
+                #     st.write(os.listdir(temp_dir))
 
-                    #shutil.move(temp_infile.name, temp_dir)
-                    #shutil.move(temp_gf, temp_dir)
-                    #shutil.move(temp_cf, temp_dir)
-                    #temp_dir = tempfile.mkdtemp()
-                    st.write(temp_dir)
+                #     #shutil.move(temp_infile.name, temp_dir)
+                #     #shutil.move(temp_gf, temp_dir)
+                #     #shutil.move(temp_cf, temp_dir)
+                #     #temp_dir = tempfile.mkdtemp()
+                #     st.write(temp_dir)
+                
+                temp_dir = './mtxdir'
+
                 
 
                     #find(matrix) and return everything that comes before
                     #path = os.path.join(temp_dir, self.infilename) #concatenates paths instead of joining them all under one dir
-                    data = sc.read_10x_mtx(temp_dir) #method requires a pathlike obj, so have to create a temp one above
+                data = sc.read_10x_mtx(temp_dir) #method requires a pathlike obj, so have to create a temp one above
             # if input_ext == 'mtx':
             #     data = sc.read_10x_mtx(self.infile)  # sc.read_10x_mtx #10x genomics formatted mtx file
             elif input_ext == 'hdf5':
