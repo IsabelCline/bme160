@@ -161,51 +161,54 @@ def run(): #main() analog for st
     These should have the same prefix as the mtx file.''')
     input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx', 'h5ad', 'loom', 'xslx', 'hdf5', 'tsv'])
     if input_file is not None:
-        sep = ''
-        gfile = None 
-        cfile = None
+        import tempfile
+        with tempfile.NamedTemporaryFile(dir='.', suffix = os.path.splitext(input_file.name)[1][1:].lower()) as temp_input_file:
+            temp_input_file.write(input_file.getbuffer())
+            sep = ''
+            gfile = None 
+            cfile = None
 
-        if os.path.splitext(input_file.name)[1][1:].lower() == 'mtx':
-            gfile = st.file_uploader('Upload your tsv file containing annotated genes corresponding to the uploaded mtx file', type = ['tsv'])
-            cfile = st.file_uploader('Upload your tsv file containing cell barcodes corresponding to the uploaded mtx file', type = ['tsv'])
+            if os.path.splitext(input_file.name)[1][1:].lower() == 'mtx':
+                gfile = st.file_uploader('Upload your tsv file containing annotated genes corresponding to the uploaded mtx file', type = ['tsv'])
+                cfile = st.file_uploader('Upload your tsv file containing cell barcodes corresponding to the uploaded mtx file', type = ['tsv'])
+                #make these into tempfiles as well?
+
+
             
 
+            output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx', 'loom', 'h5ad', 'tsv'])
+            if output_format == 'txt':
+                sep = '\t' #default separator. if used this is essentially a .tsv file
+                separator_selection = st.selectbox('Select separator for data (default is tab):', ['Comma', 'Tab', '1 space', '2 spaces', '3 spaces'])
+                if separator_selection == 'Comma':
+                    sep = ','
+                elif separator_selection == '1 space':
+                    sep = ' '
+                elif separator_selection == '2 spaces':
+                    sep = '  '
+                elif separator_selection == '3 spaces':
+                    sep = '   '
+            #write in ability to name the genes/cells file if output_format == 'mtx'
+            elif output_format == 'mtx': #maybe move to after convert file?
+                gfile = st.text_input('Name the tsv file that will contain the names of the genes. Default is [filename]_genes.', value = os.path.splitext(self.infilename)[0])
+                cfile = st.text_input('Name the tsv file that will contain the cell barcodes. Default is [filename]_barcodes.', value = os.path.splitext(self.infilename)[0])
+            if st.button("Convert File"):
+                converter = FileConverter(temp_input_file, input_file.name, output_format, sep, gfile, cfile)
+                converted_file = converter.convert_file()
 
-        
-
-        output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx', 'loom', 'h5ad', 'tsv'])
-        if output_format == 'txt':
-            sep = '\t' #default separator. if used this is essentially a .tsv file
-            separator_selection = st.selectbox('Select separator for data (default is tab):', ['Comma', 'Tab', '1 space', '2 spaces', '3 spaces'])
-            if separator_selection == 'Comma':
-                sep = ','
-            elif separator_selection == '1 space':
-                sep = ' '
-            elif separator_selection == '2 spaces':
-                sep = '  '
-            elif separator_selection == '3 spaces':
-                sep = '   '
-        #write in ability to name the genes/cells file if output_format == 'mtx'
-        elif output_format == 'mtx': #maybe move to after convert file?
-            gfile = st.text_input('Name the tsv file that will contain the names of the genes. Default is [filename]_genes.', value = os.path.splitext(self.infilename)[0])
-            cfile = st.text_input('Name the tsv file that will contain the cell barcodes. Default is [filename]_barcodes.', value = os.path.splitext(self.infilename)[0])
-        if st.button("Convert File"):
-            converter = FileConverter(input_file, input_file.name, output_format, sep, gfile, cfile)
-            converted_file = converter.convert_file()
-
-            if converter.outfile:
-                st.success(f'File converted successfully. Output file: {converter.outfile}')
-                #from io import BytesIO
-                #filecontent = BytesIO(open(converter.outfile, 'rb').read())
-                #with open(converter.outfile, 'rb') as file:
-                    #filecontent = file.read()
-                st.download_button(
-                    label=f"Download {converter.outfile}",
-                    #data=filecontent,
-                    #data=open(converter.outfile, 'rb').read(),
-                    data = converted_file,
-                    file_name=converter.outfile)
-                #st.markdown(f'Download [converted file]({converted_file})')
+                if converter.outfile:
+                    st.success(f'File converted successfully. Output file: {converter.outfile}')
+                    #from io import BytesIO
+                    #filecontent = BytesIO(open(converter.outfile, 'rb').read())
+                    #with open(converter.outfile, 'rb') as file:
+                        #filecontent = file.read()
+                    st.download_button(
+                        label=f"Download {converter.outfile}",
+                        #data=filecontent,
+                        #data=open(converter.outfile, 'rb').read(),
+                        data = converted_file,
+                        file_name=converter.outfile)
+                    #st.markdown(f'Download [converted file]({converted_file})')
 if __name__ == '__main__':
     run()
     # '''
