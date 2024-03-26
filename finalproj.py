@@ -14,7 +14,7 @@ class FileConverter:
         Translate file to AnnData object in order for it to be able to access AnnData methods.
         Use Scanpy & AnnData methods to read and write file to specified output. '''
     supported_formats = ['h5ad', 'mtx', 'csv', 'txt', 'loom', 'tsv', 'hdf5', 'xslx']
-    def __init__(self, infile, infilename outformat, sep, gf = None, cf = None): 
+    def __init__(self, infile, infilename, outformat, sep, gf = None, cf = None): 
         ''' Initialize the file type and name for both input and output. '''
         self.tinfile = infile
         self.infilename = infilename
