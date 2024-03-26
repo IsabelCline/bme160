@@ -142,6 +142,7 @@ class FileConverter:
                     st.write(path)
                     outfilename = shutil.make_archive("/tmp/" + path.stem, 'zip', tempdir)
                     st.write(os.listdir('/tmp'))
+                    st.write(outfilename)
                     return outfilename
             elif self.outformat == 'txt':
                 self.txt_file_write(data, self.sep)
@@ -228,7 +229,7 @@ def run(): #main() analog for st
                         #data=filecontent,
                         data=open(converted_file, 'rb'),
                         #data = converted_file,
-                        file_name=converter.outfile)
+                        file_name=converted_file.name)
                     #st.markdown(f'Download [converted file]({converted_file})')
 if __name__ == '__main__':
     run()
