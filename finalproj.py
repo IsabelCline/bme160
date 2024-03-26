@@ -129,8 +129,10 @@ class FileConverter:
             
             #writing
             if self.outformat == 'csv':
-                data.write_csvs(self.outfile) #could also use pd.to_csv here
-
+                #create a temp directory and give to write_csvs
+                data.write_csvs(tempdir) #could also use pd.to_csv here
+                outfilename = shutil.make_archive(self.infilename, 'zip', tempdir)
+                return outfilename
             elif self.outformat == 'txt':
                 self.txt_file_write(data, self.sep)
 
@@ -147,7 +149,7 @@ class FileConverter:
             elif self.outformat == 'tsv':
                 data.write_csvs(self.outfile, sep = '\t')
             
-            return self.outfile
+            #return self.outfile
             
 
         except Exception as e:
@@ -214,8 +216,8 @@ def run(): #main() analog for st
                     st.download_button(
                         label=f"Download {converter.outfile}",
                         #data=filecontent,
-                        data=open(converter.outfile, 'rb').read(),
-                        #data = converted_file,
+                        #data=open(converter.outfile, 'rb').read(),
+                        data = converted_file,
                         file_name=converter.outfile)
                     #st.markdown(f'Download [converted file]({converted_file})')
 if __name__ == '__main__':
