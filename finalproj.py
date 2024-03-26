@@ -138,7 +138,7 @@ class FileConverter:
                     
                     data.write_csvs(tempdir)
                     st.write(os.listdir(tempdir))
-                    outfilename = shutil.make_archive(self.infilename, 'zip', tempdir)
+                    outfilename = shutil.make_archive(os.path.splitext(self.infilename)[0], 'zip', tempdir)
                     st.write(os.listdir('/tmp'))
                     return outfilename
             elif self.outformat == 'txt':
