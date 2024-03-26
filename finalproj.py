@@ -229,7 +229,7 @@ def run(): #main() analog for st
                         #data=filecontent,
                         data=open(converted_file, 'rb'),
                         #data = converted_file,
-                        file_name=converted_file.name)
+                        file_name=converted_file)
                     #st.markdown(f'Download [converted file]({converted_file})')
 if __name__ == '__main__':
     run()
