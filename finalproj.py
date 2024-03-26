@@ -81,6 +81,7 @@ class FileConverter:
             elif input_ext == 'h5ad':
                 #have to read file as binary/bytes?
                 data = sc.read_h5ad(self.tinfile.name)
+                st.write(data)
             elif input_ext == 'mtx':
                 #create temp directory
                 #create temp files, copy files into temp files
