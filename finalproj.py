@@ -134,8 +134,9 @@ class FileConverter:
                 #create a temp directory and give to write_csvs
                 with tempfile.TemporaryDirectory() as tempdir:
                     st.write(tempdir)
-                    st.write(os.listdir(tempdir))
+                    
                     data.write_csvs(tempdir)
+                    st.write(os.listdir(tempdir))
                     outfilename = shutil.make_archive(self.infilename, 'zip', tempdir)
                     return outfilename
             elif self.outformat == 'txt':
