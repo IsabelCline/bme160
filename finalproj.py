@@ -6,6 +6,7 @@ import streamlit as st
 import anndata as ad
 import os
 import tempfile
+import shutil
 
 import pandas as pd #needed?
 #could do buttons in streamlit to select infile/outfile types, that way inputs are controlled
@@ -138,6 +139,7 @@ class FileConverter:
                     data.write_csvs(tempdir)
                     st.write(os.listdir(tempdir))
                     outfilename = shutil.make_archive(self.infilename, 'zip', tempdir)
+                    st.write(os.listdir('/tmp'))
                     return outfilename
             elif self.outformat == 'txt':
                 self.txt_file_write(data, self.sep)
