@@ -220,12 +220,13 @@ def run(): #main() analog for st
                 converted_file = converter.convert_file()
                 st.write(converted_file)
                 if converted_file:
-                    st.success(f'File converted successfully. Output file: {converter.outfile}')
+                    path = Path(converted_file)
+                    st.success(f'File converted successfully. Output file: {path.name}')
                     #from io import BytesIO
                     #filecontent = BytesIO(open(converter.outfile, 'rb').read())
                     #with open(converter.outfile, 'rb') as file:
                         #filecontent = file.read()
-                    path = Path(converted_file)
+                    
                     st.download_button(
                         label=f"Download {path.name}",
                         #data=filecontent,
