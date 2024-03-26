@@ -7,6 +7,7 @@ import anndata as ad
 import os
 import tempfile
 import shutil
+from pathlib import Path
 
 import pandas as pd #needed?
 #could do buttons in streamlit to select infile/outfile types, that way inputs are controlled
@@ -131,7 +132,7 @@ class FileConverter:
             
             #writing
             if self.outformat == 'csv':
-                from pathlib import Path
+                
                 #create a temp directory and give to write_csvs
                 with tempfile.TemporaryDirectory() as tempdir:
                     st.write(tempdir)
@@ -224,12 +225,13 @@ def run(): #main() analog for st
                     #filecontent = BytesIO(open(converter.outfile, 'rb').read())
                     #with open(converter.outfile, 'rb') as file:
                         #filecontent = file.read()
+                    path = Path(converted_file)
                     st.download_button(
-                        label=f"Download {converted_file}",
+                        label=f"Download {path.name}",
                         #data=filecontent,
                         data=open(converted_file, 'rb'),
                         #data = converted_file,
-                        file_name=converted_file)
+                        file_name=path.name)
                     #st.markdown(f'Download [converted file]({converted_file})')
 if __name__ == '__main__':
     run()
