@@ -130,9 +130,12 @@ class FileConverter:
             
             #writing
             if self.outformat == 'csv':
+                
                 #create a temp directory and give to write_csvs
                 with tempfile.TemporaryDirectory() as tempdir:
-                    data.write_csvs(tempdir) #could also use pd.to_csv here
+                    st.write(tempdir)
+                    st.write(os.listdir(tempdir))
+                    data.write_csvs(tempdir)
                     outfilename = shutil.make_archive(self.infilename, 'zip', tempdir)
                     return outfilename
             elif self.outformat == 'txt':
