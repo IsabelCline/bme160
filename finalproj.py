@@ -129,7 +129,7 @@ class FileConverter:
             
             #writing
             if self.outformat == 'csv':
-                data.AnnData.write_csvs(self.outfile) #could also use pd.to_csv here
+                data.write_csvs(self.outfile) #could also use pd.to_csv here
 
             elif self.outformat == 'txt':
                 self.txt_file_write(data, self.sep)
