@@ -140,7 +140,7 @@ class FileConverter:
                     st.write(os.listdir(tempdir))
                     path= Path(self.infilename)
                     st.write(path)
-                    outfilename = shutil.make_archive(path.stem, 'zip', tempdir)
+                    outfilename = shutil.make_archive("/tmp/" + path.stem, 'zip', tempdir)
                     st.write(os.listdir('/tmp'))
                     return outfilename
             elif self.outformat == 'txt':
