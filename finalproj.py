@@ -129,16 +129,21 @@ class FileConverter:
             
             #writing
             if self.outformat == 'csv':
-                data.write_csvs(self.outfile) #could also use pd.to_csv here
+                data.AnnData.write_csvs(self.outfile) #could also use pd.to_csv here
+
             elif self.outformat == 'txt':
                 self.txt_file_write(data, self.sep)
+
             elif self.outformat == 'h5ad':
                 data.write_h5ad(self.outfile)
+
             elif self.outformat == 'mtx':
                 # to mtx outfile format
                 self.mtx_file_write(data)
+
             elif self.outformat == 'loom':
                 data.write_loom(self.outfile)
+
             elif self.outformat == 'tsv':
                 data.write_csvs(self.outfile, sep = '\t')
             
@@ -209,8 +214,8 @@ def run(): #main() analog for st
                     st.download_button(
                         label=f"Download {converter.outfile}",
                         #data=filecontent,
-                        #data=open(converter.outfile, 'rb').read(),
-                        data = converted_file,
+                        data=open(converter.outfile, 'rb').read(),
+                        #data = converted_file,
                         file_name=converter.outfile)
                     #st.markdown(f'Download [converted file]({converted_file})')
 if __name__ == '__main__':
