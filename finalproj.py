@@ -215,8 +215,8 @@ def run(): #main() analog for st
             if st.button("Convert File"):
                 converter = FileConverter(temp_input_file, input_file.name, output_format, sep, gfile, cfile)
                 converted_file = converter.convert_file()
-
-                if converter.outfile:
+                st.write(converted_file)
+                if converted_file:
                     st.success(f'File converted successfully. Output file: {converter.outfile}')
                     #from io import BytesIO
                     #filecontent = BytesIO(open(converter.outfile, 'rb').read())
@@ -225,7 +225,7 @@ def run(): #main() analog for st
                     st.download_button(
                         label=f"Download {converter.outfile}",
                         #data=filecontent,
-                        data=open(converter.outfile, 'rb'),
+                        data=open(converted_file, 'rb'),
                         #data = converted_file,
                         file_name=converter.outfile)
                     #st.markdown(f'Download [converted file]({converted_file})')
