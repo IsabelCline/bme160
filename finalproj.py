@@ -14,10 +14,10 @@ class FileConverter:
         Translate file to AnnData object in order for it to be able to access AnnData methods.
         Use Scanpy & AnnData methods to read and write file to specified output. '''
     supported_formats = ['h5ad', 'mtx', 'csv', 'txt', 'loom', 'tsv', 'hdf5', 'xslx']
-    def __init__(self, infile, outformat, sep, gf = None, cf = None): 
+    def __init__(self, infile, infilename outformat, sep, gf = None, cf = None): 
         ''' Initialize the file type and name for both input and output. '''
-        self.infile = infile
-        self.infilename = infile.name
+        self.tinfile = infile
+        self.infilename = infilename
         #st.write(self.infilename)
         self.outformat = outformat
         self.outfile = None
@@ -80,7 +80,7 @@ class FileConverter:
                 data = sc.read_text(self.infile)
             elif input_ext == 'h5ad':
                 #have to read file as binary/bytes?
-                data = sc.read_h5ad(self.infilename)
+                data = sc.read_h5ad(self.tinfile.name)
             elif input_ext == 'mtx':
                 #create temp directory
                 #create temp files, copy files into temp files
@@ -196,7 +196,7 @@ def run(): #main() analog for st
                 gfile = st.text_input('Name the tsv file that will contain the names of the genes. Default is [filename]_genes.', value = os.path.splitext(self.infilename)[0])
                 cfile = st.text_input('Name the tsv file that will contain the cell barcodes. Default is [filename]_barcodes.', value = os.path.splitext(self.infilename)[0])
             if st.button("Convert File"):
-                converter = FileConverter(temp_input_file, output_format, sep, gfile, cfile)
+                converter = FileConverter(temp_input_file, input_file.name, output_format, sep, gfile, cfile)
                 converted_file = converter.convert_file()
 
                 if converter.outfile:
