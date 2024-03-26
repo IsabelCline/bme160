@@ -131,14 +131,15 @@ class FileConverter:
             
             #writing
             if self.outformat == 'csv':
-                
+                from pathlib import Path
                 #create a temp directory and give to write_csvs
                 with tempfile.TemporaryDirectory() as tempdir:
                     st.write(tempdir)
                     
                     data.write_csvs(tempdir)
                     st.write(os.listdir(tempdir))
-                    outfilename = shutil.make_archive(os.path.splitext(self.infilename)[0], 'zip', tempdir)
+                    path= Path(self.infilename)
+                    outfilename = shutil.make_archive(path.stem, 'zip', tempdir)
                     st.write(os.listdir('/tmp'))
                     return outfilename
             elif self.outformat == 'txt':
@@ -224,8 +225,8 @@ def run(): #main() analog for st
                     st.download_button(
                         label=f"Download {converter.outfile}",
                         #data=filecontent,
-                        #data=open(converter.outfile, 'rb').read(),
-                        data = converted_file,
+                        data=open(converter.outfile, 'rb'),
+                        #data = converted_file,
                         file_name=converter.outfile)
                     #st.markdown(f'Download [converted file]({converted_file})')
 if __name__ == '__main__':
