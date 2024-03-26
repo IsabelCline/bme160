@@ -5,6 +5,7 @@ import scanpy as sc
 import streamlit as st
 import anndata as ad
 import os
+import tempfile
 
 import pandas as pd #needed?
 #could do buttons in streamlit to select infile/outfile types, that way inputs are controlled
@@ -130,9 +131,10 @@ class FileConverter:
             #writing
             if self.outformat == 'csv':
                 #create a temp directory and give to write_csvs
-                data.write_csvs(tempdir) #could also use pd.to_csv here
-                outfilename = shutil.make_archive(self.infilename, 'zip', tempdir)
-                return outfilename
+                with tempfile.TemporaryDirectory() as tempdir:
+                    data.write_csvs(tempdir) #could also use pd.to_csv here
+                    outfilename = shutil.make_archive(self.infilename, 'zip', tempdir)
+                    return outfilename
             elif self.outformat == 'txt':
                 self.txt_file_write(data, self.sep)
 
@@ -173,7 +175,7 @@ def run(): #main() analog for st
     These should have the same prefix as the mtx file.''')
     input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx', 'h5ad', 'loom', 'xslx', 'hdf5', 'tsv'])
     if input_file is not None:
-        import tempfile
+        #import tempfile
         with tempfile.NamedTemporaryFile(dir='.', suffix = os.path.splitext(input_file.name)[1][1:].lower()) as temp_input_file:
             temp_input_file.write(input_file.getbuffer())
             sep = ''
