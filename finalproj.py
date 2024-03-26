@@ -7,6 +7,7 @@ import anndata as ad
 import os
 import tempfile
 import shutil
+import pandas as pd
 from pathlib import Path
 
 import pandas as pd #needed?
@@ -84,6 +85,7 @@ class FileConverter:
             elif input_ext == 'h5ad':
                 #have to read file as binary/bytes?
                 data = sc.read_h5ad(self.tinfile.name)
+                
                 st.write(data)
             elif input_ext == 'mtx':
                 #create temp directory
@@ -135,16 +137,25 @@ class FileConverter:
                 
                 #create a temp directory and give to write_csvs
                 with tempfile.TemporaryDirectory() as tempdir:
-                    st.write(tempdir)
-                    
-                    data.write_csvs(tempdir)
-                    st.write(os.listdir(tempdir))
+                    #st.write(tempdir)
+
                     path= Path(self.infilename)
-                    st.write(path)
+
+                    data.write_csvs(tempdir, skip_data = False) #write annotations
+
+                    #df = data.AnnData.to_df() #returns a pandas df
+                    #csvpath = tempdir + '/' + path.stem + '_gex.csv'
+                    #df.to_csv(csvpath) #write gene expression matrix
+
+
+                    #st.write(os.listdir(tempdir))
+                    
+                    #st.write(path)
                     outfilename = shutil.make_archive("/tmp/" + path.stem, 'zip', tempdir)
-                    st.write(os.listdir('/tmp'))
-                    st.write(outfilename)
+                    #st.write(os.listdir('/tmp'))
+                    #st.write(outfilename)
                     return outfilename
+            
             elif self.outformat == 'txt':
                 self.txt_file_write(data, self.sep)
 
@@ -159,7 +170,17 @@ class FileConverter:
                 data.write_loom(self.outfile)
 
             elif self.outformat == 'tsv':
-                data.write_csvs(self.outfile, sep = '\t')
+                with tempfile.TemporaryDirectory() as tempdir:
+                    #st.write(tempdir)
+                    
+                    data.write_csvs(tempdir, sep = '\t')
+                    #st.write(os.listdir(tempdir))
+                    path= Path(self.infilename)
+                    #st.write(path)
+                    outfilename = shutil.make_archive("/tmp/" + path.stem, 'zip', tempdir)
+                    #st.write(os.listdir('/tmp'))
+                    #st.write(outfilename)
+                    return outfilename
             
             #return self.outfile
             
