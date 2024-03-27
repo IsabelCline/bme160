@@ -242,42 +242,41 @@ def run(): #main() analog for st
                 #     #make these into tempfiles as well?
 
 
-                output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx', 'loom', 'h5ad', 'tsv'])
+            output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx', 'loom', 'h5ad', 'tsv'])
                 
-                if output_format == 'txt': #ignore for now
-                    sep = '\t' #default separator. if used this is essentially a .tsv file
-                    separator_selection = st.selectbox('Select separator for data (default is tab):', ['Comma', 'Tab', '1 space', '2 spaces', '3 spaces'])
-                    if separator_selection == 'Comma':
-                        sep = ','
-                    elif separator_selection == '1 space':
-                        sep = ' '
-                    elif separator_selection == '2 spaces':
-                        sep = '  '
-                    elif separator_selection == '3 spaces':
-                        sep = '   '
+            if output_format == 'txt': #ignore for now
+                sep = '\t' #default separator. if used this is essentially a .tsv file
+                separator_selection = st.selectbox('Select separator for data (default is tab):', ['Comma', 'Tab', '1 space', '2 spaces', '3 spaces'])
+                if separator_selection == 'Comma':
+                    sep = ','
+                elif separator_selection == '1 space':
+                    sep = ' '
+                elif separator_selection == '2 spaces':
+                    sep = '  '
+                elif separator_selection == '3 spaces':
+                    sep = '   '
                 #write in ability to name the genes/cells file if output_format == 'mtx'
                 # elif output_format == 'mtx': #maybe move to after convert file?
                 #     gfile = st.text_input('Name the tsv file that will contain the names of the genes. Default is [filename]_genes.', value = os.path.splitext(self.infilename)[0])
                 #     cfile = st.text_input('Name the tsv file that will contain the cell barcodes. Default is [filename]_barcodes.', value = os.path.splitext(self.infilename)[0])
-                if st.button("Convert File"):
-                    converter = FileConverter(tempdir, input_ext, input_file.name, f.name, output_format, sep)
-                    converted_file = converter.convert_file() #will either be a single file or a zip with multiple files
-                    st.write(converted_file)
-                    if converted_file:
-                        path = Path(converted_file)
-                        st.success(f'File converted successfully. Output file: {path.name}')
+            if st.button("Convert File"):
+                converter = FileConverter(tempdir, input_ext, input_file.name, f.name, output_format, sep)
+                converted_file = converter.convert_file() #will either be a single file or a zip with multiple files
+                st.write(converted_file)
+                if converted_file:
+                    path = Path(converted_file)
+                    st.success(f'File converted successfully. Output file: {path.name}')
                         #from io import BytesIO
                         #filecontent = BytesIO(open(converter.outfile, 'rb').read())
                         #with open(converter.outfile, 'rb') as file:
                             #filecontent = file.read()
                         
-                        st.download_button(
-                            label=f"Download {path.name}",
-                            #data=filecontent,
-                            data=open(converted_file, 'rb'),
-                            #data = converted_file,
-                            file_name=path.name)
-                        #st.markdown(f'Download [converted file]({converted_file})')
+                    st.download_button(
+                        label=f"Download {path.name}",
+                        #data=filecontent,
+                        data=open(converted_file, 'rb'),
+                        #data = converted_file,
+                        file_name=path.name)
 if __name__ == '__main__':
     run()
     # '''
