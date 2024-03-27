@@ -214,7 +214,7 @@ def run(): #main() analog for st
         sep = None
         #import tempfile
         #create temp directory
-        input_ext = os.path.splitext(input_file.name)[1][1:].lower())
+        input_ext = os.path.splitext(input_file.name)[1][1:].lower()
         with tempfile.TemporaryDirectory() as tempdir:
             if input_ext == 'mtx':
                 gfile = st.file_uploader('Upload your tsv file containing annotated genes corresponding to the uploaded mtx file', type = ['tsv'])
