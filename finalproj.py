@@ -18,11 +18,12 @@ class FileConverter:
         Translate file to AnnData object in order for it to be able to access AnnData methods.
         Use Scanpy & AnnData methods to read and write file to specified output. '''
     supported_formats = ['h5ad', 'mtx', 'csv', 'txt', 'loom', 'tsv', 'h5', 'xslx']
-    def __init__(self, tempdir, inext, infilename, outformat, sep): 
+    def __init__(self, tempdir, inext, infilename, fname, outformat, sep): 
         ''' Initialize the file type and name for both input and output. ''' #change this
         self.dir = tempdir
         self.inext = inext
         self.infilename = infilename
+        self.tfname = fname
         #st.write(self.infilename)
         self.outformat = outformat
         self.outfile = None
@@ -77,13 +78,13 @@ class FileConverter:
         try:
             #reading
             if input_ext == 'csv':
-                data = sc.read_csv(self.infilename)
+                data = sc.read_csv(self.tfname)
             #cont. for supported file types
             elif input_ext == 'txt':
-                data = sc.read_text(self.infilename)
+                data = sc.read_text(self.tfname)
             elif input_ext == 'h5ad':
                 #have to read file as binary/bytes?
-                data = sc.read_h5ad(self.infilename)
+                data = sc.read_h5ad(self.tfname)
                 
                 st.write(data)
             elif input_ext == 'mtx':
@@ -259,7 +260,7 @@ def run(): #main() analog for st
                 #     gfile = st.text_input('Name the tsv file that will contain the names of the genes. Default is [filename]_genes.', value = os.path.splitext(self.infilename)[0])
                 #     cfile = st.text_input('Name the tsv file that will contain the cell barcodes. Default is [filename]_barcodes.', value = os.path.splitext(self.infilename)[0])
                 if st.button("Convert File"):
-                    converter = FileConverter(tempdir, input_ext, f.name, output_format, sep)
+                    converter = FileConverter(tempdir, input_ext, input_file.name, f.name, output_format, sep)
                     converted_file = converter.convert_file() #will either be a single file or a zip with multiple files
                     st.write(converted_file)
                     if converted_file:
