@@ -34,28 +34,34 @@ class FileConverter:
         '''Write an AnnData object to a txt file.'''
         return adataobj.write_csvs(self.outfile, sep = separator) #reusing csv method with defined separator
     
-    def mtx_file_write(self, genenames, cellnames):
+    def mtx_file_write(self): #maybe write_10x_mtx?
         ''' Write an AnnData object to an mtx file, and the corresponding genes/barcodes to tsv files.'''
         #could build in a way to let user specify header, but seems standard?
-        self.outfile.writelines(['%%MatrixMarket matrix coordinate integer general', 'placeholder']) #this seems standard, is this right?
-        nonzero = 0
-        for row in data.AnnData.n_obs: #cells
-            for col in data.AnnData.n_var: #genes
-                val = AnnData.X[row, col]
-                if int(val) != 0:
-                    nonzero += 1
-                    self.outfile.write(f'{row} {col} {val}')
-                    #need a sort function in here somewhere?
-        #once have counted nonzero values, then can go back and write line 2
-        self.outfile.seek(49)#sets position to right after header to write over placeholder
-        self.outfile.write(f'{data.AnnData.n_obs} {data.AnnData.n_var} {nonzero}') #go back and rewrite after nonzero has been calculated
+        with tempfile.TemporaryDirectory() as tempdir:
+            path= Path(self.infilename) #in or out of with block?
+            with open(tempdir + '/' + path.stem + '_matrix.mtx', 'wb') as f:
+                f.writelines(['%%MatrixMarket matrix coordinate integer general', '%', 'placeholder'])
+
+        #self.outfile.writelines(['%%MatrixMarket matrix coordinate integer general', 'placeholder']) #this seems standard, is this right?
+                nonzero = 0
+                for row in data.AnnData.n_obs: #cells
+                    for col in data.AnnData.n_var: #genes
+                        val = AnnData.X[row, col]
+                        if int(val) != 0:
+                            nonzero += 1
+                            f.write(f'{row} {col} {val}')
+                            #need a sort function in here somewhere?
+                #once have counted nonzero values, then can go back and write line 2
+                f.seek(50)#sets position to right after header to write over placeholder
+                f.write(f'{data.AnnData.n_obs} {data.AnnData.n_var} {nonzero}') #go back and rewrite after nonzero has been calculated
         
-        yield self.outfile
+        
         #then create the tsv files with gene names and cell names?
-        with open(genenames.tsv) as genes, open(cellnames.tsv) as cells:
-            genes.write(data.AnnData.var_names)
-            cells.write(data.AnnData.obs_names)
-        return genenames.tsv, cellnames.tsv #or smth along those lines
+            with open(tempdir + '/' + path.stem + '_genes.tsv', 'wb') as genes, open(tempdir + '/' + path.stem + '_barcodes.tsv', 'wb') as cells:
+                genes.write(data.AnnData.var_names)
+                cells.write(data.AnnData.obs_names) #is there sorting to be done here?
+            mtxoutzip = shutil.make_archive("/tmp/" + path.stem, 'zip', tempdir)
+        return mtxoutzip
         
         
         #pass #not really sure how to write this one. maybe utilize scipy?
@@ -166,7 +172,7 @@ class FileConverter:
 
             elif self.outformat == 'mtx':
                 # to mtx outfile format
-                self.mtx_file_write(data)
+                return self.mtx_file_write(data)
 
             elif self.outformat == 'loom':
                 data.write_loom(self.outfile)
@@ -175,20 +181,26 @@ class FileConverter:
                 with tempfile.TemporaryDirectory() as tempdir:
                     #st.write(tempdir)
                     
-                    data.write_csvs(tempdir, sep = '\t')
+                    data.write_csvs(tempdir, skip_data = False, sep = '\t')
                     #st.write(os.listdir(tempdir))
+                    for tempd, subdirs, tempfiles in os.walk(tempdir):
+                        #maybe print statements?
+                        for tempfile in tempfiles:
+                            if os.path.splitext(tempfile)[1] == '.csv':
+                                os.rename(tempfile, os.path.basename(tempfile) + '.tsv') #path.stem instead of os.path.basename?
                     path= Path(self.infilename)
                     #st.write(path)
                     outfilename = shutil.make_archive("/tmp/" + path.stem, 'zip', tempdir)
                     #st.write(os.listdir('/tmp'))
                     #st.write(outfilename)
                     #have to rename all csv files to tsv
+                    
                     #os.walk
                     #gives list of files
                     # for every file:
                     #     if suffix = csv:
                     #         os.rename(csv file, path.stem + tsv)
-                    # return outfilename
+                    return outfilename
             
             #return self.outfile
             
@@ -203,7 +215,7 @@ def run(): #main() analog for st
         file converter. Your file should store a 2D matrix with cells in the rows and genes in the columns (ie. something 
         like a .tsv file that contains only gene names is not suitable for this program). 
         Currently supported formats are: csv, tsv, txt, h5ad, and loom. 
-        Excel (xslx) and hdf5 files are only supported on input.
+        Excel (xslx) and hdf5 (h5) files are only supported on input.
         MTX is a work in progress. 
         Get started by uploading your file below. Download button is not operational currently.''')
         
@@ -225,6 +237,7 @@ def run(): #main() analog for st
                 if gfile is not None and cfile is not None:
                     f = open(tempdir + '/matrix.mtx', 'wb')
                     f.write(input_file.getbuffer())
+                    f.close() #necessary?
 
                     gf = open(tempdir + '/genes.tsv', 'wb')
                     gf.write(gfile.getbuffer())
