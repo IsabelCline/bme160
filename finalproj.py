@@ -9,6 +9,7 @@ import tempfile
 import shutil
 import pandas as pd
 from pathlib import Path
+from scipy.io import mmwrite
 
 import pandas as pd #needed?
 #could do buttons in streamlit to select infile/outfile types, that way inputs are controlled
@@ -40,20 +41,21 @@ class FileConverter:
         with tempfile.TemporaryDirectory() as tempdir:
             path= Path(self.infilename) #in or out of with block?
             with open(tempdir + '/' + path.stem + '_matrix.mtx', 'wb') as f:
-                f.writelines(['%%MatrixMarket matrix coordinate integer general', '%', 'placeholder'])
+                mmwrite(f, data.X)
+        #         f.writelines(['%%MatrixMarket matrix coordinate integer general', '%', 'placeholder'])
 
-        #self.outfile.writelines(['%%MatrixMarket matrix coordinate integer general', 'placeholder']) #this seems standard, is this right?
-                nonzero = 0
-                for row in data.AnnData.n_obs: #cells
-                    for col in data.AnnData.n_var: #genes
-                        val = AnnData.X[row, col]
-                        if int(val) != 0:
-                            nonzero += 1
-                            f.write(f'{row} {col} {val}')
-                            #need a sort function in here somewhere?
-                #once have counted nonzero values, then can go back and write line 2
-                f.seek(50)#sets position to right after header to write over placeholder
-                f.write(f'{data.AnnData.n_obs} {data.AnnData.n_var} {nonzero}') #go back and rewrite after nonzero has been calculated
+        # #self.outfile.writelines(['%%MatrixMarket matrix coordinate integer general', 'placeholder']) #this seems standard, is this right?
+        #         nonzero = 0
+        #         for row in data.AnnData.n_obs: #cells
+        #             for col in data.AnnData.n_var: #genes
+        #                 val = AnnData.X[row, col]
+        #                 if int(val) != 0:
+        #                     nonzero += 1
+        #                     f.write(f'{row} {col} {val}')
+        #                     #need a sort function in here somewhere?
+        #         #once have counted nonzero values, then can go back and write line 2
+        #         f.seek(50)#sets position to right after header to write over placeholder
+        #         f.write(f'{data.AnnData.n_obs} {data.AnnData.n_var} {nonzero}') #go back and rewrite after nonzero has been calculated
         
         
         #then create the tsv files with gene names and cell names?
