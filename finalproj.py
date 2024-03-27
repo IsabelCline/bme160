@@ -34,7 +34,7 @@ class FileConverter:
         '''Write an AnnData object to a txt file.'''
         return adataobj.write_csvs(self.outfile, sep = separator) #reusing csv method with defined separator
     
-    def mtx_file_write(self): #maybe write_10x_mtx?
+    def mtx_file_write(self, data): #maybe write_10x_mtx?
         ''' Write an AnnData object to an mtx file, and the corresponding genes/barcodes to tsv files.'''
         #could build in a way to let user specify header, but seems standard?
         with tempfile.TemporaryDirectory() as tempdir:
