@@ -41,7 +41,7 @@ class FileConverter:
         with tempfile.TemporaryDirectory() as tempdir:
             path= Path(self.infilename) #in or out of with block?
             with open(tempdir + '/' + path.stem + '_matrix.mtx', 'wb') as f:
-                mmwrite(f, data.X)
+                mmwrite(f, data)
         #         f.writelines(['%%MatrixMarket matrix coordinate integer general', '%', 'placeholder'])
 
         # #self.outfile.writelines(['%%MatrixMarket matrix coordinate integer general', 'placeholder']) #this seems standard, is this right?
