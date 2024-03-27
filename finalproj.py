@@ -180,12 +180,12 @@ class FileConverter:
                     #st.write(os.listdir('/tmp'))
                     #st.write(outfilename)
                     #have to rename all csv files to tsv
-                    os.walk
-                    gives list of files
-                    for every file:
-                        if suffix = csv:
-                            os.rename(csv file, path.stem + tsv)
-                    return outfilename
+                    #os.walk
+                    #gives list of files
+                    # for every file:
+                    #     if suffix = csv:
+                    #         os.rename(csv file, path.stem + tsv)
+                    # return outfilename
             
             #return self.outfile
             
