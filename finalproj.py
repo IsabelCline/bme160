@@ -220,16 +220,16 @@ def run(): #main() analog for st
                 gfile = st.file_uploader('Upload your tsv file containing annotated genes corresponding to the uploaded mtx file', type = ['tsv'])
                 cfile = st.file_uploader('Upload your tsv file containing cell barcodes corresponding to the uploaded mtx file', type = ['tsv'])
 
-                f = open(tempdir + '/matrix.mtx', wb)
+                f = open(tempdir + '/matrix.mtx', 'wb')
                 f.write(input_file.getbuffer())
 
-                gf = open(tempdir + '/genes.tsv', wb)
+                gf = open(tempdir + '/genes.tsv', 'wb')
                 gf.write(gfile.getbuffer())
 
-                cf = open(tempdir + '/barcodes.tsv', wb)
+                cf = open(tempdir + '/barcodes.tsv', 'wb')
                 cf.write(cfile.getbuffer())
             else:
-                f = open(tempdir + '/' + 'tempfile.' + input_ext, wb)
+                f = open(tempdir + '/' + 'tempfile.' + input_ext, 'wb')
                 f.write(input_file.getbuffer())
             #with tempfile.NamedTemporaryFile(dir=tempdir, suffix = input_ext) as temp_input_file:
                 #temp_input_file.write(input_file.getbuffer())
