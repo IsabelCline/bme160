@@ -118,14 +118,14 @@ class FileConverter:
                 data = sc.read_10x_mtx(self.dir) #method requires a pathlike obj, so have to create a temp one
             # if input_ext == 'mtx':
             #     data = sc.read_10x_mtx(self.infile)  # sc.read_10x_mtx #10x genomics formatted mtx file
-            elif input_ext == 'hdf5':
-                data = sc.read_hdf(self.infile)  # both for reading hd5f files, which is preferred?
+            elif input_ext == 'h5':
+                data = sc.read_hdf(self.tfname)  # both for reading hd5f files, which is preferred?
             # if input_ext == 'hdf5':
             #     data = sc.read_10x_h5(self.infile)  #read 10x genomics formatted hdf5 file 
             elif input_ext == 'loom':         #loom formated hd5f
-                data = sc.read_loom(self.infile)
+                data = sc.read_loom(self.tfname)
             elif input_ext == 'xslx':
-                data = sc.read_excel(self.infile)
+                data = sc.read_excel(self.tfname)
             elif input_ext == 'tsv':
                 data = sc.read_csv(self.infile, delimiter = '\t')
 
@@ -158,9 +158,11 @@ class FileConverter:
             
             elif self.outformat == 'txt':
                 self.txt_file_write(data, self.sep)
+                return self.outfile
 
             elif self.outformat == 'h5ad':
                 data.write_h5ad(self.outfile)
+                return self.outfile
 
             elif self.outformat == 'mtx':
                 # to mtx outfile format
