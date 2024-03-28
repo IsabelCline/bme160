@@ -267,10 +267,10 @@ def run(): #main() analog for st
                     for root, dirs, files in os.walk(tempdir): #this should walk dirs recursively?
                         st.write(f'{root} {dirs} {files}')
                         for filename in files:
-                            st.write(filename)
-                            st.write(root)
+                            st.write(f'filename: {filename}')
+                            st.write(f'root: {root}')
                             filepath = os.path.join(root, filename)
-                            st.write(filepath)
+                            st.write(f'filepath: {filepath}')
 
                             root, fext = os.path.splitext(filepath)
                             st.write(f'{root}, {fext}')
