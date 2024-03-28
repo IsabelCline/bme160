@@ -272,8 +272,8 @@ def run(): #main() analog for st
                             filepath = os.path.join(root, filename)
                             st.write(f'filepath: {filepath}')
 
-                            root, fext = os.path.splitext(filepath)
-                            st.write(f'{root}, {fext}')
+                            stem, fext = os.path.splitext(filepath)
+                            st.write(f'{stem}, {fext}')
 
                             if fext == 'tsv' and (re.search('barcodes.tsv', filepath) is not None or re.search('genes.tsv', filepath) is not None):
                                 st.write(f'{filepath} was skipped for conversion because it is presumed to be a barcodes/genes tsv file correlated with an mtx file.')
