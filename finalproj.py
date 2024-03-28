@@ -188,10 +188,11 @@ class FileConverter:
                     for tempd, subdirs, tempfiles in os.walk(tempdir):
                         #maybe print statements?
                         for tempf in tempfiles:
-                            root, ext = os.path.splitext(tempf)
-                            st.write(f'{tempf} {root} {ext}')
+                            temppath = os.path.join(tempd, tempf)
+                            root, ext = os.path.splitext(temppath)
+                            st.write(f'{temppath} {tempf} {root} {ext}')
                             if ext == '.csv':
-                                os.rename(tempf, root + '.tsv') #path.stem instead of os.path.basename?
+                                os.rename(temppath, root + '.tsv') #path.stem instead of os.path.basename?
                     path= Path(self.infilename)
                     #st.write(path)
                     outfilename = shutil.make_archive("/tmp/" + path.stem, 'zip', tempdir)
