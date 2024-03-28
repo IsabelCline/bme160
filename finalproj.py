@@ -183,7 +183,7 @@ class FileConverter:
                 with tempfile.TemporaryDirectory() as tempdir:
                     #st.write(tempdir)
                     
-                    data.write_csvs(tempdir, skip_data = False, sep = '\t')
+                    data.write_csvs(tempdir, skip_data = True, sep = '\t')
                     #st.write(os.listdir(tempdir))
                     for tempd, subdirs, tempfiles in os.walk(tempdir):
                         #maybe print statements?
