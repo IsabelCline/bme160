@@ -62,10 +62,14 @@ class FileConverter:
         
         #then create the tsv files with gene names and cell names?
             with open(tempdir + '/' + path.stem + '_genes.tsv', 'wb') as genes, open(tempdir + '/' + path.stem + '_barcodes.tsv', 'wb') as cells:
+                i = 0
                 for var in data.var_names.values:
                     st.write(var)
-                for obs in data.obs_names.values:
-                    st.write(obs) #is there sorting to be done here?
+                    i += 1
+                    if i > 10:
+                        break
+                #for obs in data.obs_names.values:
+                    #st.write(obs) #is there sorting to be done here?
             mtxoutzip = shutil.make_archive("/tmp/" + path.stem, 'zip', tempdir)
         return mtxoutzip
         
