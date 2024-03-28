@@ -42,7 +42,7 @@ class FileConverter:
             path= Path(self.infilename) #in or out of with block?
             with open(tempdir + '/' + path.stem + '_matrix.mtx', 'wb') as f:
                 st.write('About to call mmwrite...')
-                mmwrite(f, data.X)
+                #mmwrite(f, data.X)
                 st.write('Called mmwrite')
         #         f.writelines(['%%MatrixMarket matrix coordinate integer general', '%', 'placeholder'])
 
