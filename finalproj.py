@@ -63,6 +63,7 @@ class FileConverter:
         #then create the tsv files with gene names and cell names?
             with open(tempdir + '/' + path.stem + '_genes.tsv', 'wb') as genes, open(tempdir + '/' + path.stem + '_barcodes.tsv', 'wb') as cells:
                 #feature = data.var["feature_types"] if data.var["feature_types"] else "Gene Expression"
+                st.write(data.var)
                 if data.var.get("gene_ids"):
                     pd.DataFrame({0: data.var["gene_ids"], 1: data.var_names, 2: "Gene Expression"}).to_csv(
                         genes,
