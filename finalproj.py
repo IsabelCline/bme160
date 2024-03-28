@@ -71,17 +71,9 @@ class FileConverter:
                 #         header=False
                 #         )
                 # elif data.var["gene_symbols"]:
-                pd.DataFrame({0: data.var_names, 1: data.var_names, 2: "Gene Expression"}).to_csv(
-                    genes,
-                    sep="\t",
-                    index=False,
-                    header=False
-                    )
-                pd.DataFrame(data.obs_names).to_csv(
-                    cells,
-                    sep="\t",
-                    index=False,
-                    header=False)
+                pd.DataFrame({0: data.var_names, 1: data.var_names, 2: "Gene Expression"})
+                    .to_csv(genes, sep="\t", index=False, header=False)
+                pd.DataFrame(data.obs_names).to_csv(cells, sep="\t", index=False, header=False)
                 # i = 0
                 # for var in data.var_names.values:
                 #     st.write(var)
