@@ -276,7 +276,7 @@ def run(): #main() analog for st
                     cf = open(tempdir + '/barcodes.tsv', 'wb')
                     cf.write(cfile.getbuffer())
             elif input_ext == 'zip':
-                with Zipfile(input_file) as myzip:
+                with ZipFile(input_file) as myzip:
                     myzip.extractall(tempdir)
                 st.write(os.listdir(tempdir))
             else:
