@@ -309,7 +309,7 @@ def run(): #main() analog for st
                 # converter = FileConverter(tempdir, input_ext, input_file.name, f.name, output_format, sep)
                 # converted_file = converter.convert_file() #will either be a single file or a zip with multiple files
                 
-                if converted_file:
+                if converted_file is not None:
                     st.write(converted_file)
                     path = Path(converted_file)
                     st.success(f'File converted successfully. Output file: {path.name}')
