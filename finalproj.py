@@ -268,10 +268,13 @@ def run(): #main() analog for st
                         st.write(f'{root} {dirs} {files}')
                         for filename in files:
                             st.write(filename)
+
                             filepath = os.path.join(root, filename)
                             st.write(filepath)
+
                             root, fext = os.path.splitext(filepath)
                             st.write(f'{root} {fext}')
+                            
                             if fext == 'tsv' and (re.search('barcodes.tsv', filepath) is not None or re.search('genes.tsv', filepath) is not None):
                                 st.write(f'{filepath} was skipped for conversion because it is presumed to be a barcodes/genes tsv file correlated with an mtx file.')
                             elif fext in FileConverter.supported_formats:
