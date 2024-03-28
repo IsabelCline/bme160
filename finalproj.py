@@ -41,7 +41,9 @@ class FileConverter:
         with tempfile.TemporaryDirectory() as tempdir:
             path= Path(self.infilename) #in or out of with block?
             with open(tempdir + '/' + path.stem + '_matrix.mtx', 'wb') as f:
+                st.write('About to call mmwrite...')
                 mmwrite(f, data.X)
+                st.write('Called mmwrite')
         #         f.writelines(['%%MatrixMarket matrix coordinate integer general', '%', 'placeholder'])
 
         # #self.outfile.writelines(['%%MatrixMarket matrix coordinate integer general', 'placeholder']) #this seems standard, is this right?
@@ -183,14 +185,14 @@ class FileConverter:
                 with tempfile.TemporaryDirectory() as tempdir:
                     #st.write(tempdir)
                     
-                    data.write_csvs(tempdir, skip_data = True, sep = '\t')
+                    data.write_csvs(tempdir, skip_data = False, sep = '\t')
                     #st.write(os.listdir(tempdir))
                     for tempd, subdirs, tempfiles in os.walk(tempdir):
                         #maybe print statements?
                         for tempf in tempfiles:
                             temppath = os.path.join(tempd, tempf)
                             root, ext = os.path.splitext(temppath)
-                            st.write(f'{temppath} {tempf} {root} {ext}')
+                            #st.write(f'{temppath} {tempf} {root} {ext}')
                             if ext == '.csv':
                                 os.rename(temppath, root + '.tsv') #path.stem instead of os.path.basename?
                     path= Path(self.infilename)
