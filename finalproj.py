@@ -231,6 +231,7 @@ def run(): #main() analog for st
         #import tempfile
         #create temp directory
         input_ext = os.path.splitext(input_file.name)[1][1:].lower()
+        st.write(input_ext)
         if input_ext == 'mtx':
             gfile = st.file_uploader('Upload your tsv file containing annotated genes corresponding to the uploaded mtx file', type = ['tsv'])
             cfile = st.file_uploader('Upload your tsv file containing cell barcodes corresponding to the uploaded mtx file', type = ['tsv'])
@@ -258,9 +259,11 @@ def run(): #main() analog for st
                         converter = FileConverter(tempdir, input_ext, input_file.name, f.name, output_format, sep)
                         converted_file = converter.convert_file()
                 elif input_ext == 'zip':
+                    st.write('input extension is zip, line 262')
                     with ZipFile(input_file) as myzip:
                         myzip.extractall(tempdir)
                         #walk tempdir recursively
+                    st.write(os.listdir(tempdir))
                     for root, dirs, files in os.walk(tempdir): #this should walk dirs recursively
                         for filename in files:
                             filepath = os.path.join(root, filename)
@@ -279,7 +282,7 @@ def run(): #main() analog for st
                             else:
                                 st.write(f'{filepath} was skipped for conversion because it is not a supported format.')
 
-                    st.write(os.listdir(tempdir))
+                    #st.write(os.listdir(tempdir))
 
                 else:
                     f = open(tempdir + '/' + 'tempfile.' + input_ext, 'wb')
