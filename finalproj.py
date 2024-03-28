@@ -1,4 +1,3 @@
-#print('hello world')
 #'''Required filetypes: h5ad, mtx, rds, tsv.gz, txt.gz, h5, h5seurat, fastq?, bcl?, csv?'''
 #!pip install scanpy
 import scanpy as sc
@@ -11,21 +10,20 @@ import pandas as pd
 from pathlib import Path
 from scipy.io import mmwrite
 from zipfile import ZipFile
+import pandas as pd 
+import re
 
-import pandas as pd #needed?
-#could do buttons in streamlit to select infile/outfile types, that way inputs are controlled
-# st.download_button("Download file", file) 
 class FileConverter:
     ''' Recieve user input for file, input file type and desired file output type. 
         Translate file to AnnData object in order for it to be able to access AnnData methods.
         Use Scanpy & AnnData methods to read and write file to specified output. '''
-    supported_formats = ['h5ad', 'mtx', 'csv', 'txt', 'loom', 'tsv', 'h5', 'xslx', 'zip']
-    def __init__(self, tempdir, inext, infilename, fname, outformat, sep): 
+    supported_formats = ['h5ad', 'mtx', 'csv', 'txt', 'loom', 'tsv', 'h5', 'xslx'] #zip?
+    def __init__(self, tempdir, inext, infilename, tfname, outformat, sep): 
         ''' Initialize the file type and name for both input and output. ''' #change this
         self.dir = tempdir
         self.inext = inext
         self.infilename = infilename
-        self.tfname = fname
+        self.tfname = tfname
         #st.write(self.infilename)
         self.outformat = outformat
         self.outfile = None
@@ -78,16 +76,9 @@ class FileConverter:
                 else:
                     pd.DataFrame({0: data.var_names, 1: data.var_names, 2: "Gene Expression"}
                         ).to_csv(genes, sep="\t", index=False, header=False)
+                
                 pd.DataFrame(data.obs_names).to_csv(cells, sep="\t", index=False, header=False)
-                # i = 0
-                # for var in data.var_names.values:
-                #     st.write(var)
-                #     i += 1
-                #     if i > 10:
-                #         break
 
-                #for obs in data.obs_names.values:
-                    #st.write(obs) #is there sorting to be done here?
             mtxoutzip = shutil.make_archive("/tmp/" + path.stem, 'zip', tempdir)
         return mtxoutzip
         
@@ -122,34 +113,12 @@ class FileConverter:
                 
                 st.write(data)
             elif input_ext == 'mtx':
-                #create temp directory
-                #create temp files, copy files into temp files
-                #import tempfile
-                #import shutil
-                # with tempfile.TemporaryDirectory() as temp_dir:
-                #     st.write(temp_dir)
-                #     temp_infile = tempfile.TemporaryFile(dir = temp_dir)
-                #     temp_gf = tempfile.TemporaryFile(dir = temp_dir)
-                #     temp_cf = tempfile.TemporaryFile(dir = temp_dir)
-
-                #     shutil.copyfileobj(self.infile, temp_infile)
-                #     shutil.copyfileobj(self.gf, temp_gf)
-                #     shutil.copyfileobj(self.cf, temp_cf) 
-                #     st.write(os.listdir(temp_dir))
-
-                #     #shutil.move(temp_infile.name, temp_dir)
-                #     #shutil.move(temp_gf, temp_dir)
-                #     #shutil.move(temp_cf, temp_dir)
-                #     #temp_dir = tempfile.mkdtemp()
-                #     st.write(temp_dir)
-                #given zip directory, zip.extractall into a tempdirectory
-                
-
-                
-
-                    #find(matrix) and return everything that comes before
-                    #path = os.path.join(temp_dir, self.infilename) #concatenates paths instead of joining them all under one dir
-                data = sc.read_10x_mtx(self.dir) #method requires a pathlike obj, so have to create a temp one
+                #find prefix
+                prefix = re.split("matrix.mtx", self.infilename)[0]
+                if prefix is not '':
+                    data = sc.read_10x_mtx(self.dir, prefix = prefix)
+                else:
+                    data = sc.read_10x_mtx(self.dir) 
             # if input_ext == 'mtx':
             #     data = sc.read_10x_mtx(self.infile)  # sc.read_10x_mtx #10x genomics formatted mtx file
             elif input_ext == 'h5':
@@ -161,7 +130,7 @@ class FileConverter:
             elif input_ext == 'xslx':
                 data = sc.read_excel(self.tfname)
             elif input_ext == 'tsv':
-                data = sc.read_csv(self.infile, delimiter = '\t')
+                data = sc.read_csv(self.tfname, delimiter = '\t')
 
             
             self.outfile = os.path.splitext(self.infilename)[0] + f'.{self.outformat}'
@@ -238,6 +207,7 @@ class FileConverter:
 
         except Exception as e:
             st.error(f'Error converting file: {e}')
+
 def run(): #main() analog for st
     ''' Generate the applicaton interface, with a title and welcome message for user, along with other instructions. '''
     st.title('Single-Cell Gene Expression Data File Converter')
@@ -261,57 +231,83 @@ def run(): #main() analog for st
         #import tempfile
         #create temp directory
         input_ext = os.path.splitext(input_file.name)[1][1:].lower()
-        with tempfile.TemporaryDirectory() as tempdir:
-            if input_ext == 'mtx':
-                gfile = st.file_uploader('Upload your tsv file containing annotated genes corresponding to the uploaded mtx file', type = ['tsv'])
-                cfile = st.file_uploader('Upload your tsv file containing cell barcodes corresponding to the uploaded mtx file', type = ['tsv'])
-                if gfile is not None and cfile is not None:
-                    f = open(tempdir + '/matrix.mtx', 'wb')
+        if input_ext == 'mtx':
+            gfile = st.file_uploader('Upload your tsv file containing annotated genes corresponding to the uploaded mtx file', type = ['tsv'])
+            cfile = st.file_uploader('Upload your tsv file containing cell barcodes corresponding to the uploaded mtx file', type = ['tsv'])
+        
+        output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx', 'loom', 'h5ad', 'tsv'])
+        if st.button("Convert File"):
+
+            with tempfile.TemporaryDirectory() as tempdir:
+                if input_ext == 'mtx':
+                    #gfile = st.file_uploader('Upload your tsv file containing annotated genes corresponding to the uploaded mtx file', type = ['tsv'])
+                    #cfile = st.file_uploader('Upload your tsv file containing cell barcodes corresponding to the uploaded mtx file', type = ['tsv'])
+                    if gfile is not None and cfile is not None:
+                        f = open(tempdir + '/matrix.mtx', 'wb')
+                        f.write(input_file.getbuffer())
+                        f.close() #necessary?
+
+                        gf = open(tempdir + '/genes.tsv', 'wb')
+                        gf.write(gfile.getbuffer())
+                        gf.close()
+
+                        cf = open(tempdir + '/barcodes.tsv', 'wb')
+                        cf.write(cfile.getbuffer())
+                        cf.close()
+
+                        converter = FileConverter(tempdir, input_ext, input_file.name, f.name, output_format, sep)
+                        converted_file = converter.convert_file()
+                elif input_ext == 'zip':
+                    with ZipFile(input_file) as myzip:
+                        myzip.extractall(tempdir)
+                        #walk tempdir recursively
+                    for root, dirs, files in os.walk(tempdir): #this should walk dirs recursively
+                        for filename in files:
+                            filepath = os.path.join(root, filename)
+                            root, fext = os.path.splitext(filepath)
+                            if fext == 'tsv' and (re.search('barcodes.tsv', filepath) is not None or re.search('genes.tsv', filepath) is not None):
+                                st.write(f'{filepath} was skipped for conversion because it is presumed to be a barcodes/genes tsv file correlated with an mtx file.')
+                            elif fext in FileConverter.supported_formats:
+                                try:
+                                    converter = FileConverter(tempdir, fext, filename, filepath, output_format, sep) #filename or filepath?
+                                    converted_file = converter.convert_file()
+                                except Exception as e:
+                                    st.error(f'Error converting file: {e}. File {filename} was not able to be converted.')
+
+                            #elif fext == 'mtx':
+                                #try:
+                            else:
+                                st.write(f'{filepath} was skipped for conversion because it is not a supported format.')
+
+                    st.write(os.listdir(tempdir))
+
+                else:
+                    f = open(tempdir + '/' + 'tempfile.' + input_ext, 'wb')
                     f.write(input_file.getbuffer())
-                    f.close() #necessary?
-
-                    gf = open(tempdir + '/genes.tsv', 'wb')
-                    gf.write(gfile.getbuffer())
-
-                    cf = open(tempdir + '/barcodes.tsv', 'wb')
-                    cf.write(cfile.getbuffer())
-            elif input_ext == 'zip':
-                with ZipFile(input_file) as myzip:
-                    myzip.extractall(tempdir)
-                st.write(os.listdir(tempdir))
-            else:
-                f = open(tempdir + '/' + 'tempfile.' + input_ext, 'wb')
-                f.write(input_file.getbuffer())
-            #with tempfile.NamedTemporaryFile(dir=tempdir, suffix = input_ext) as temp_input_file:
-                #temp_input_file.write(input_file.getbuffer())
-                #sep = ''
-
-                # if os.path.splitext(input_file.name)[1][1:].lower() == 'mtx':
-                #     gfile = st.file_uploader('Upload your tsv file containing annotated genes corresponding to the uploaded mtx file', type = ['tsv'])
-                #     cfile = st.file_uploader('Upload your tsv file containing cell barcodes corresponding to the uploaded mtx file', type = ['tsv'])
-                #     #make these into tempfiles as well?
+                    f.close()
+                    
+                    converter = FileConverter(tempdir, input_ext, input_file.name, f.name, output_format, sep)
+                    converted_file = converter.convert_file()
 
 
-            output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx', 'loom', 'h5ad', 'tsv'])
+
+            #output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx', 'loom', 'h5ad', 'tsv'])
                 
-            if output_format == 'txt': #ignore for now
-                sep = '\t' #default separator. if used this is essentially a .tsv file
-                separator_selection = st.selectbox('Select separator for data (default is tab):', ['Comma', 'Tab', '1 space', '2 spaces', '3 spaces'])
-                if separator_selection == 'Comma':
-                    sep = ','
-                elif separator_selection == '1 space':
-                    sep = ' '
-                elif separator_selection == '2 spaces':
-                    sep = '  '
-                elif separator_selection == '3 spaces':
-                    sep = '   '
-                #write in ability to name the genes/cells file if output_format == 'mtx'
-                # elif output_format == 'mtx': #maybe move to after convert file?
-                #     gfile = st.text_input('Name the tsv file that will contain the names of the genes. Default is [filename]_genes.', value = os.path.splitext(self.infilename)[0])
-                #     cfile = st.text_input('Name the tsv file that will contain the cell barcodes. Default is [filename]_barcodes.', value = os.path.splitext(self.infilename)[0])
-            if st.button("Convert File"):
-                converter = FileConverter(tempdir, input_ext, input_file.name, f.name, output_format, sep)
-                converted_file = converter.convert_file() #will either be a single file or a zip with multiple files
+            # if output_format == 'txt': #ignore for now
+            #     sep = '\t' #default separator. if used this is essentially a .tsv file
+            #     separator_selection = st.selectbox('Select separator for data (default is tab):', ['Comma', 'Tab', '1 space', '2 spaces', '3 spaces'])
+            #     if separator_selection == 'Comma':
+            #         sep = ','
+            #     elif separator_selection == '1 space':
+            #         sep = ' '
+            #     elif separator_selection == '2 spaces':
+            #         sep = '  '
+            #     elif separator_selection == '3 spaces':
+            #         sep = '   '
+            
+            # if st.button("Convert File"):
+                # converter = FileConverter(tempdir, input_ext, input_file.name, f.name, output_format, sep)
+                # converted_file = converter.convert_file() #will either be a single file or a zip with multiple files
                 st.write(converted_file)
                 if converted_file:
                     path = Path(converted_file)
@@ -327,6 +323,8 @@ def run(): #main() analog for st
                         data=open(converted_file, 'rb'),
                         #data = converted_file,
                         file_name=path.name)
+                else:
+                    st.error('No file was able to be converted.')
 if __name__ == '__main__':
     run()
     # '''
