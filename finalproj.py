@@ -277,6 +277,8 @@ def run(): #main() analog for st
                             st.write(f'{stem}, {fext}')
 
                             if fext == 'tsv' and (re.search('barcodes.tsv', filepath) is not None or re.search('genes.tsv', filepath) is not None):
+                                st.write(re.search('barcodes.tsv', filepath)
+                                st.write(re.search('genes.tsv', filepath))
                                 st.write(f'{filepath} was skipped for conversion because it is presumed to be a barcodes/genes tsv file correlated with an mtx file.')
                             elif fext in FileConverter.supported_formats:
                                 try:
