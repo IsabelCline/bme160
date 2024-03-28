@@ -193,7 +193,7 @@ class FileConverter:
                     path= Path(self.infilename)
                     #st.write(path)
                     outfilename = shutil.make_archive("/tmp/" + path.stem, 'zip', tempdir)
-                    #st.write(os.listdir('/tmp'))
+                    #st.write(os.listdir('/tmp'))4
                     #st.write(outfilename)
                     #have to rename all csv files to tsv
                     
