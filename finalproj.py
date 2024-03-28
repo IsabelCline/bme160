@@ -42,7 +42,7 @@ class FileConverter:
             path= Path(self.infilename) #in or out of with block?
             with open(tempdir + '/' + path.stem + '_matrix.mtx', 'wb') as f:
                 st.write('About to call mmwrite...')
-                #mmwrite(f, data.X)
+                mmwrite(f, data.X.T)
                 st.write('Called mmwrite')
         #         f.writelines(['%%MatrixMarket matrix coordinate integer general', '%', 'placeholder'])
 
@@ -62,12 +62,33 @@ class FileConverter:
         
         #then create the tsv files with gene names and cell names?
             with open(tempdir + '/' + path.stem + '_genes.tsv', 'wb') as genes, open(tempdir + '/' + path.stem + '_barcodes.tsv', 'wb') as cells:
-                i = 0
-                for var in data.var_names.values:
-                    st.write(var)
-                    i += 1
-                    if i > 10:
-                        break
+                feature = data.var["feature_types"] if data.var["feature_types"] else "Gene Expression"
+                if data.var["gene_ids"]:
+                    pd.DataFrame({0: data.var["gene_ids"], 1: data.var_names, 2: feature}).to_csv(
+                        genes,
+                        sep="\t",
+                        index=False,
+                        header=False
+                        )
+                elif data.var["gene_symbols"]:
+                    pd.DataFrame({0: data.var_names, 1: data.var["gene_symbols"], 2: feature}).to_csv(
+                        genes,
+                        sep="\t",
+                        index=False,
+                        header=False
+                        )
+                pd.DataFrame(adata.obs_names).to_csv(
+                    cells,
+                    sep="\t",
+                    index=False,
+                    header=False)
+                # i = 0
+                # for var in data.var_names.values:
+                #     st.write(var)
+                #     i += 1
+                #     if i > 10:
+                #         break
+
                 #for obs in data.obs_names.values:
                     #st.write(obs) #is there sorting to be done here?
             mtxoutzip = shutil.make_archive("/tmp/" + path.stem, 'zip', tempdir)
