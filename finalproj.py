@@ -10,6 +10,7 @@ import shutil
 import pandas as pd
 from pathlib import Path
 from scipy.io import mmwrite
+from zipfile import ZipFile
 
 import pandas as pd #needed?
 #could do buttons in streamlit to select infile/outfile types, that way inputs are controlled
@@ -18,7 +19,7 @@ class FileConverter:
     ''' Recieve user input for file, input file type and desired file output type. 
         Translate file to AnnData object in order for it to be able to access AnnData methods.
         Use Scanpy & AnnData methods to read and write file to specified output. '''
-    supported_formats = ['h5ad', 'mtx', 'csv', 'txt', 'loom', 'tsv', 'h5', 'xslx']
+    supported_formats = ['h5ad', 'mtx', 'csv', 'txt', 'loom', 'tsv', 'h5', 'xslx', 'zip']
     def __init__(self, tempdir, inext, infilename, fname, outformat, sep): 
         ''' Initialize the file type and name for both input and output. ''' #change this
         self.dir = tempdir
@@ -254,7 +255,7 @@ def run(): #main() analog for st
     st.write('''If you are trying to convert an mtx file into another format, you will be prompted to upload your gene 
     and cell/barcode tsv files after uploading your mtx file.
     These should have the same prefix as the mtx file.''')
-    input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx', 'h5ad', 'loom', 'xslx', 'h5', 'tsv'])
+    input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx', 'h5ad', 'loom', 'xslx', 'h5', 'tsv', 'zip'])
     if input_file is not None:
         sep = None
         #import tempfile
@@ -274,6 +275,10 @@ def run(): #main() analog for st
 
                     cf = open(tempdir + '/barcodes.tsv', 'wb')
                     cf.write(cfile.getbuffer())
+            elif input_ext == 'zip':
+                with Zipfile(input_file) as myzip:
+                    myzip.extractall(tempdir)
+                st.write(os.listdir(tempdir))
             else:
                 f = open(tempdir + '/' + 'tempfile.' + input_ext, 'wb')
                 f.write(input_file.getbuffer())
