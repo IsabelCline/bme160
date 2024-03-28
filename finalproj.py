@@ -237,7 +237,7 @@ def run(): #main() analog for st
         
         output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx', 'loom', 'h5ad', 'tsv'])
         if st.button("Convert File"):
-
+            converted_file = None
             with tempfile.TemporaryDirectory() as tempdir:
                 if input_ext == 'mtx':
                     #gfile = st.file_uploader('Upload your tsv file containing annotated genes corresponding to the uploaded mtx file', type = ['tsv'])
@@ -309,7 +309,7 @@ def run(): #main() analog for st
                 # converter = FileConverter(tempdir, input_ext, input_file.name, f.name, output_format, sep)
                 # converted_file = converter.convert_file() #will either be a single file or a zip with multiple files
                 
-                if converted_file is not None:
+                if converted_file:
                     st.write(converted_file)
                     path = Path(converted_file)
                     st.success(f'File converted successfully. Output file: {path.name}')
