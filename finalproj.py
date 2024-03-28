@@ -77,7 +77,7 @@ class FileConverter:
                     index=False,
                     header=False
                     )
-                pd.DataFrame(adata.obs_names).to_csv(
+                pd.DataFrame(data.obs_names).to_csv(
                     cells,
                     sep="\t",
                     index=False,
