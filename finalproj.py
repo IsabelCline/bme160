@@ -285,6 +285,7 @@ def run(): #main() analog for st
                                 try:
                                     converter = FileConverter(tempdir, fext, filename, filepath, output_format, sep) #filename or filepath?
                                     converted_file = converter.convert_file()
+                                    st.write(f'{filepath} was recognized as a {fext} file.')
                                 except Exception as e:
                                     st.error(f'Error converting file: {e}. File {filename} was not able to be converted.')
 
