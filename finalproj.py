@@ -166,6 +166,7 @@ class FileConverter:
 
             elif self.outformat == 'h5ad':
                 data.write_h5ad(self.outfile)
+                st.write(self.outfile)
                 return self.outfile
 
             elif self.outformat == 'mtx':
