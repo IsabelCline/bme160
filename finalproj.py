@@ -115,6 +115,7 @@ class FileConverter:
             elif input_ext == 'mtx':
                 #find prefix
                 prefix = re.split("matrix.mtx", self.infilename)[0]
+                st.write(prefix)
                 if prefix != '':
                     data = sc.read_10x_mtx(self.dir, prefix = prefix)
                 else:
@@ -327,7 +328,7 @@ def run(): #main() analog for st
                 # converted_file = converter.convert_file() #will either be a single file or a zip with multiple files
                 
                 if len(converted_files) != 0:
-                    for converted_file in converted_files:
+                    for key, converted_file in enumerate(converted_files):
                         st.write(converted_file)
                         path = Path(converted_file)
                         st.success(f'File converted successfully. Output file: {path.name}')
@@ -341,7 +342,8 @@ def run(): #main() analog for st
                             #data=filecontent,
                             data=open(converted_file, 'rb'),
                             #data = converted_file,
-                            file_name=path.name)
+                            file_name=path.name,
+                            key = key)
                 else:
                     st.error('No file was able to be converted.')
 if __name__ == '__main__':
