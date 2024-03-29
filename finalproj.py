@@ -329,8 +329,9 @@ def run(): #main() analog for st
                 if len(converted_files) > 1:
                     #pass
                     with tempfile.TemporaryDirectory() as converted_file_directory:
+                        st.write(converted_file_directory)
                         for converted_file in converted_files:
-                            with open(converted_file_directory + '/' + converted_file, 'wb') as f:
+                            with open(converted_file_directory + converted_file, 'wb') as f:
                                 f.write(convert_file)
                         name = input_file.name + '_converted'
                         outzip = shutil.make_archive(name, 'zip', converted_file_directory)
