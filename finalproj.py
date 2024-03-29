@@ -167,7 +167,7 @@ class FileConverter:
             elif self.outformat == 'h5ad':
                 data.write_h5ad(self.outfile)
                 st.write(f'self.outfile is {self.outfile}')
-                st.write(os.getcwd)
+                st.write(os.getcwd())
                 return self.outfile
 
             elif self.outformat == 'mtx':
