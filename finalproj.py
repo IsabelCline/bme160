@@ -238,7 +238,7 @@ def run(): #main() analog for st
         
         output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx', 'loom', 'h5ad', 'tsv'])
         if st.button("Convert File"):
-            converted_file = None
+            converted_files = []
             with tempfile.TemporaryDirectory() as tempdir:
                 if input_ext == 'mtx':
                     #gfile = st.file_uploader('Upload your tsv file containing annotated genes corresponding to the uploaded mtx file', type = ['tsv'])
@@ -257,9 +257,8 @@ def run(): #main() analog for st
                         cf.close()
 
                         converter = FileConverter(tempdir, input_ext, input_file.name, f.name, output_format, sep)
-                        converted_file = converter.convert_file()
+                        converted_files.append(converter.convert_file())
                 elif input_ext == 'zip':
-                    convertedfiles = 0
                     #st.write('input extension is zip, line 262')
                     with ZipFile(input_file) as myzip:
                         myzip.extractall(tempdir)
@@ -286,8 +285,8 @@ def run(): #main() analog for st
                                 try:
                                     st.write(f'{filepath} was recognized as a {fext} file. Converting {filepath}...')
                                     converter = FileConverter(tempdir, fext, filename, filepath, output_format, sep) #filename or filepath?
-                                    converted_file = converter.convert_file() #should instead be adding it to a directory of converted files here?
-                                    convertedfiles += 1
+                                    converted_files.append(converter.convert_file()) #should instead be adding it to a directory of converted files here?
+                                    
                                     st.write(convertedfiles)
                                 except Exception as e:
                                     st.error(f'Error converting file: {e}. File {filename} was not able to be converted.')
@@ -305,7 +304,7 @@ def run(): #main() analog for st
                     f.close()
                     
                     converter = FileConverter(tempdir, input_ext, input_file.name, f.name, output_format, sep)
-                    converted_file = converter.convert_file()
+                    converted_files.append(converter.convert_file())
 
 
 
@@ -327,21 +326,22 @@ def run(): #main() analog for st
                 # converter = FileConverter(tempdir, input_ext, input_file.name, f.name, output_format, sep)
                 # converted_file = converter.convert_file() #will either be a single file or a zip with multiple files
                 
-                if converted_file:
-                    st.write(converted_file)
-                    path = Path(converted_file)
-                    st.success(f'File converted successfully. Output file: {path.name}')
-                        #from io import BytesIO
-                        #filecontent = BytesIO(open(converter.outfile, 'rb').read())
-                        #with open(converter.outfile, 'rb') as file:
-                            #filecontent = file.read()
-                        
-                    st.download_button(
-                        label=f"Download {path.name}",
-                        #data=filecontent,
-                        data=open(converted_file, 'rb'),
-                        #data = converted_file,
-                        file_name=path.name)
+                if len(converted_files) != 0:
+                    for converted_file in converted_files:
+                        st.write(converted_file)
+                        path = Path(converted_file)
+                        st.success(f'File converted successfully. Output file: {path.name}')
+                            #from io import BytesIO
+                            #filecontent = BytesIO(open(converter.outfile, 'rb').read())
+                            #with open(converter.outfile, 'rb') as file:
+                                #filecontent = file.read()
+                            
+                        st.download_button(
+                            label=f"Download {path.name}",
+                            #data=filecontent,
+                            data=open(converted_file, 'rb'),
+                            #data = converted_file,
+                            file_name=path.name)
                 else:
                     st.error('No file was able to be converted.')
 if __name__ == '__main__':
