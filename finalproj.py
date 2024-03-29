@@ -287,7 +287,7 @@ def run(): #main() analog for st
                                     converter = FileConverter(tempdir, fext, filename, filepath, output_format, sep) #filename or filepath?
                                     converted_files.append(converter.convert_file()) #should instead be adding it to a directory of converted files here?
                                     
-                                    st.write(convertedfiles)
+                                    st.write(converted_files)
                                 except Exception as e:
                                     st.error(f'Error converting file: {e}. File {filename} was not able to be converted.')
 
