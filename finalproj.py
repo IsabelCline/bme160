@@ -115,7 +115,7 @@ class FileConverter:
             elif input_ext == 'mtx':
                 #find prefix
                 prefix = re.split("matrix.mtx", self.infilename)[0]
-                if prefix is not '':
+                if prefix != '':
                     data = sc.read_10x_mtx(self.dir, prefix = prefix)
                 else:
                     data = sc.read_10x_mtx(self.dir) 
@@ -259,33 +259,36 @@ def run(): #main() analog for st
                         converter = FileConverter(tempdir, input_ext, input_file.name, f.name, output_format, sep)
                         converted_file = converter.convert_file()
                 elif input_ext == 'zip':
-                    st.write('input extension is zip, line 262')
+                    convertedfiles = 0
+                    #st.write('input extension is zip, line 262')
                     with ZipFile(input_file) as myzip:
                         myzip.extractall(tempdir)
                         #walk tempdir recursively
-                    st.write(os.listdir(tempdir))
+                    #st.write(os.listdir(tempdir))
                     for root, dirs, files in os.walk(tempdir): #this should walk dirs recursively?
-                        st.write(f'{root} {dirs} {files}')
+                        #st.write(f'{root} {dirs} {files}')
                         for filename in files:
-                            st.write('\n')
-                            st.write(f'filename: {filename}')
-                            st.write(f'root: {root}')
+                            #st.write('\n')
+                            # st.write(f'filename: {filename}')
+                            # st.write(f'root: {root}')
                             filepath = os.path.join(root, filename)
-                            st.write(f'filepath: {filepath}')
+                            #st.write(f'filepath: {filepath}')
 
                             stem, fext = os.path.splitext(filepath)
-                            st.write(f'{stem}, {fext}')
+                            #st.write(f'{stem}, {fext}')
 
                             if fext[1:] == 'tsv':
                                 if (re.search('barcodes.tsv', filepath) is not None) or (re.search('genes.tsv', filepath) is not None):
-                                    st.write(re.search('barcodes.tsv', filepath))
-                                    st.write(re.search('genes.tsv', filepath))
+                                    # st.write(re.search('barcodes.tsv', filepath))
+                                    # st.write(re.search('genes.tsv', filepath))
                                     st.write(f'{filepath} was skipped for conversion because it is presumed to be a barcodes/genes tsv file correlated with an mtx file.')
                             elif fext[1:] in FileConverter.supported_formats:
                                 try:
+                                    st.write(f'{filepath} was recognized as a {fext} file. Converting {filepath}...')
                                     converter = FileConverter(tempdir, fext, filename, filepath, output_format, sep) #filename or filepath?
-                                    converted_file = converter.convert_file()
-                                    st.write(f'{filepath} was recognized as a {fext} file.')
+                                    converted_file = converter.convert_file() #should instead be adding it to a directory of converted files here?
+                                    convertedfiles += 1
+                                    st.write(convertedfiles)
                                 except Exception as e:
                                     st.error(f'Error converting file: {e}. File {filename} was not able to be converted.')
 
