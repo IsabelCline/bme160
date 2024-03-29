@@ -327,23 +327,23 @@ def run(): #main() analog for st
                 # converter = FileConverter(tempdir, input_ext, input_file.name, f.name, output_format, sep)
                 # converted_file = converter.convert_file() #will either be a single file or a zip with multiple files
                 if len(converted_files) > 1:
-                    #pass
+                    #make available to download all files as zip directory
                     with tempfile.TemporaryDirectory() as converted_file_directory:
                         st.write(converted_file_directory)
                         for converted_file in converted_files:
                             with open(converted_file_directory + converted_file, 'wb') as f:
-                                f.write(convert_file)
+                                f.write(converted_file)
                         name = input_file.name + '_converted'
                         outzip = shutil.make_archive(name, 'zip', converted_file_directory)
                         st.download_button(
-                            label=f"Download {name}",
+                            label="Download all files as a zipped folder",
                             #data=filecontent,
                             data=open(outzip, 'rb'),
                             #data = converted_file,
                             file_name=name)
 
 
-                    #make available to download multiple files as zip
+                
                 if len(converted_files) != 0:
                     for key, converted_file in enumerate(converted_files):
                         st.write(converted_file)
