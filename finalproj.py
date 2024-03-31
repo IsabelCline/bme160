@@ -123,6 +123,7 @@ class FileConverter:
                 if not os.path.isdir(self.inpath):
                     self.inpath = os.path.dirname(self.inpath)
                 # find prefix
+                st.write(self.inpath)
                 prefix = re.split("matrix.mtx", self.infilename)[0]
                 st.write(prefix)
                 if prefix != '':
