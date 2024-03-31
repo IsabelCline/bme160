@@ -1,5 +1,3 @@
-#'''Required filetypes: h5ad, mtx, rds, tsv.gz, txt.gz, h5, h5seurat, fastq?, bcl?, csv?'''
-#!pip install scanpy
 import scanpy as sc
 import streamlit as st
 import anndata as ad
@@ -13,77 +11,85 @@ from zipfile import ZipFile
 import pandas as pd 
 import re
 
+def swap_file_ext(dir, old_ext, new_ext):
+    for dpath, subdirs, tempfiles in os.walk(dir):
+        for fname in tempfiles:
+            fpath = os.path.join(dpath, fname)
+            root, ext = os.path.splitext(fpath)
+            #st.write(f'{temppath} {tempf} {root} {ext}')
+            if ext == old_ext:
+                os.rename(fpath, root + new_ext)
+
 class FileConverter:
     ''' Recieve user input for file, input file type and desired file output type. 
         Translate file to AnnData object in order for it to be able to access AnnData methods.
         Use Scanpy & AnnData methods to read and write file to specified output. '''
     supported_formats = ['h5ad', 'mtx', 'csv', 'txt', 'loom', 'tsv', 'h5', 'xslx'] #zip?
-    def __init__(self, tempdir, inext, infilename, tfname, outformat, sep): 
+    def __init__(self, inpath, inext, infilename, outdir, outext, sep): 
         ''' Initialize the file type and name for both input and output. ''' #change this
-        self.dir = tempdir
+        self.inpath = inpath
         self.inext = inext
         self.infilename = infilename
-        self.tfname = tfname
-        #st.write(self.infilename)
-        self.outformat = outformat
-        self.outfile = None
+        self.outdir = outdir
+        self.outext = outext
+        self.outpath = None
         self.sep = sep
     
-    #methods for reading/writing that aren't given in sc
-    def txt_file_write(self, adataobj, separator): #change
-        '''Write an AnnData object to a txt file.'''
-        return adataobj.write_csvs(self.outfile, sep = separator) #reusing csv method with defined separator
+    def make_out_subdir(self, sfx):
+        in_path = Path(self.infilename)
+        subdir_path = os.path.join(self.outdir, in_path.stem + sfx)
+        if os.path.exists(subdir_path):
+            shutil.rmtree(subdir_path, True)
+        os.makedirs(subdir_path)
+        return subdir_path
     
-    def mtx_file_write(self, data): #maybe write_10x_mtx?
+    def mtx_file_write(self, data): # maybe name write_10x_mtx?
         ''' Write an AnnData object to an mtx file, and the corresponding genes/barcodes to tsv files.'''
-        #could build in a way to let user specify header, but seems standard?
-        with tempfile.TemporaryDirectory() as tempdir:
-            path= Path(self.infilename) #in or out of with block?
-            with open(tempdir + '/' + path.stem + '_matrix.mtx', 'wb') as f:
-                st.write('About to call mmwrite...')
-                mmwrite(f, data.X.T)
-                st.write('Called mmwrite')
-        #         f.writelines(['%%MatrixMarket matrix coordinate integer general', '%', 'placeholder'])
 
-        # #self.outfile.writelines(['%%MatrixMarket matrix coordinate integer general', 'placeholder']) #this seems standard, is this right?
-        #         nonzero = 0
-        #         for row in data.AnnData.n_obs: #cells
-        #             for col in data.AnnData.n_var: #genes
-        #                 val = AnnData.X[row, col]
-        #                 if int(val) != 0:
-        #                     nonzero += 1
-        #                     f.write(f'{row} {col} {val}')
-        #                     #need a sort function in here somewhere?
-        #         #once have counted nonzero values, then can go back and write line 2
-        #         f.seek(50)#sets position to right after header to write over placeholder
-        #         f.write(f'{data.AnnData.n_obs} {data.AnnData.n_var} {nonzero}') #go back and rewrite after nonzero has been calculated
-        
-        
-        #then create the tsv files with gene names and cell names?
-            with open(tempdir + '/' + path.stem + '_genes.tsv', 'wb') as genes, open(tempdir + '/' + path.stem + '_barcodes.tsv', 'wb') as cells:
-                feature = data.var["feature_types"] if data.var.get("feature_types") else "Gene Expression"
-                #st.write(data.var_keys())
-                #st.write(data.var_names)
-                #st.write(data.varp)
-                #st.write(data.varm)
-                #st.write(data.var_vector())
-                if data.var.get("gene_ids"):
-                    pd.DataFrame({0: data.var["gene_ids"], 1: data.var_names, 2: "Gene Expression"}
-                        ).to_csv(genes, sep="\t", index=False, header=False)
-                elif data.var.get("gene_symbols"):
-                    pd.DataFrame({0: data.var_names, 1: data.var["gene_symbols"], 2: "Gene Expression"}
-                        ).to_csv(genes, sep="\t", index=False, header=False)
-                else:
-                    pd.DataFrame({0: data.var_names, 1: data.var_names, 2: "Gene Expression"}
-                        ).to_csv(genes, sep="\t", index=False, header=False)
-                
-                pd.DataFrame(data.obs_names).to_csv(cells, sep="\t", index=False, header=False)
+        mtx_outdir_path = self.make_out_subdir('')
+        mtx_fstem = os.path.join(mtx_outdir_path, Path(self.infilename).stem)
+        matrix_filename = mtx_fstem + '_matrix.mtx'
+        genes_filename = mtx_fstem + '_genes.tsv'
+        barcodes_filename = mtx_fstem + '_barcodes.tsv'
 
-            mtxoutzip = shutil.make_archive("/tmp/" + path.stem, 'zip', tempdir)
+        with open(matrix_filename, 'wb') as f:
+            #st.write('About to call mmwrite...')
+            mmwrite(f, data.X.T)
+            #st.write('Called mmwrite')
+        with open(genes_filename, 'wb') as genes, open(barcodes_filename, 'wb') as cells:
+            feature = data.var["feature_types"] if data.var.get("feature_types") else "Gene Expression"
+            # write genes
+            if data.var.get("gene_ids"):
+                pd.DataFrame({0: data.var["gene_ids"], 1: data.var_names, 2: "Gene Expression"}
+                    ).to_csv(genes, sep="\t", index=False, header=False)
+            elif data.var.get("gene_symbols"):
+                pd.DataFrame({0: data.var_names, 1: data.var["gene_symbols"], 2: "Gene Expression"}
+                    ).to_csv(genes, sep="\t", index=False, header=False)
+            else:
+                pd.DataFrame({0: data.var_names, 1: data.var_names, 2: "Gene Expression"}
+                    ).to_csv(genes, sep="\t", index=False, header=False)
+            # write cells
+            pd.DataFrame(data.obs_names).to_csv(cells, sep="\t", index=False, header=False)
+        # this will create a zip file with the same name as the directory
+        mtxoutzip = shutil.make_archive(mtx_outdir_path, 'zip', mtx_outdir_path)
+        # remove directory now that it is zipped
+        shutil.rmtree(mtx_outdir_path, True)
         return mtxoutzip
         
-        
-        #pass #not really sure how to write this one. maybe utilize scipy?
+    def txt_sep_write(self, data, sep):
+        #create a temp directory and give to write_csvs
+        in_format = self.inext
+        if in_format[0] == '.':
+            in_format = in_format[1:]
+        csv_outdir_path = self.make_out_subdir('_from_' + in_format + '_to_' + self.outext )
+        data.write_csvs(csv_outdir_path, skip_data = False, sep = sep)
+        if self.outext != 'csv':
+            swap_file_ext(csv_outdir_path, '.csv', '.' + self.outext)
+
+        outfilename = shutil.make_archive(csv_outdir_path, 'zip', csv_outdir_path)
+        shutil.rmtree(csv_outdir_path, True)
+
+        return outfilename
 
     def convert_file(self):
         ''' Call the correct methods to read and write to files of different formats.
@@ -91,8 +97,8 @@ class FileConverter:
             Except block returns an error message to the user so as not to crash the code when the file is not one of the included formats. '''
         #just-in-case checks; shouldn't be necessary since should be checked in streamlit
 
-        if self.outformat not in FileConverter.supported_formats:
-            st.error(f'Output format {self.outformat} is not supported.')
+        if self.outext not in FileConverter.supported_formats:
+            st.error(f'Output format {self.outext} is not supported.')
             return 
 
         input_ext = os.path.splitext(self.infilename)[1][1:].lower() #1: strips the . before the extension
@@ -103,114 +109,132 @@ class FileConverter:
         try:
             #reading
             if input_ext == 'csv':
-                data = sc.read_csv(self.tfname)
-            #cont. for supported file types
+                data = sc.read_csv(self.inpath)
+            
             elif input_ext == 'txt':
-                data = sc.read_text(self.tfname)
+                data = sc.read_text(self.inpath)
+            
             elif input_ext == 'h5ad':
-                #have to read file as binary/bytes?
-                data = sc.read_h5ad(self.tfname)
+                data = sc.read_h5ad(self.inpath)
                 
-                st.write(data)
             elif input_ext == 'mtx':
-                #find prefix
+                # check that the input path is a directory
+                if not os.path.isdir(self.inpath):
+                    self.inpath = os.path.dirname(self.inpath)
+                # find prefix
                 prefix = re.split("matrix.mtx", self.infilename)[0]
-                st.write(prefix)
+                #st.write(prefix)
                 if prefix != '':
-                    data = sc.read_10x_mtx(self.dir, prefix = prefix)
+                    data = sc.read_10x_mtx(self.inpath, prefix = prefix)
                 else:
-                    data = sc.read_10x_mtx(self.dir) 
-            # if input_ext == 'mtx':
-            #     data = sc.read_10x_mtx(self.infile)  # sc.read_10x_mtx #10x genomics formatted mtx file
+                    data = sc.read_10x_mtx(self.inpath)
+            
             elif input_ext == 'h5':
-                data = sc.read_hdf(self.tfname)  # both for reading hd5f files, which is preferred?
-            # if input_ext == 'hdf5':
-            #     data = sc.read_10x_h5(self.infile)  #read 10x genomics formatted hdf5 file 
+                data = sc.read_hdf(self.inpath)  # both for reading hd5f files, which is preferred?
+            
             elif input_ext == 'loom':         #loom formated hd5f
-                data = sc.read_loom(self.tfname)
+                data = sc.read_loom(self.inpath)
+            
             elif input_ext == 'xslx':
-                data = sc.read_excel(self.tfname)
+                data = sc.read_excel(self.inpath)
+            
             elif input_ext == 'tsv':
-                data = sc.read_csv(self.tfname, delimiter = '\t')
+                data = sc.read_csv(self.inpath, delimiter = '\t')
 
             
-            self.outfile = os.path.splitext(self.infilename)[0] + f'.{self.outformat}'
-            
+            out_filename_stem = os.path.splitext(self.infilename)[0]
+            uniq_outpath = os.path.join(self.outdir, out_filename_stem + f'.{self.outext}')
+            i = 1
+            while os.path.exists(uniq_outpath): # takes care of the case where 2 input files share the same name
+                uniq_outpath = os.path.join(self.outdir, out_filename_stem + f'_{i}.{self.outext}')
+                i += 1
+            self.outpath = uniq_outpath
+
+            st.write(f' -> Writing converted file: "{self.outpath}" Output format: "{self.outformat}"')
             #writing
-            if self.outformat == 'csv':
-                
-                #create a temp directory and give to write_csvs
-                with tempfile.TemporaryDirectory() as tempdir:
-                    #st.write(tempdir)
+            if self.outext == 'csv':
+                self.txt_sep_write(data, ',')
+                # #create a temp directory and give to write_csvs
+                # with tempfile.TemporaryDirectory() as tempdir:
+                #     #st.write(tempdir)
 
-                    path= Path(self.infilename)
+                #     path= Path(self.infilename)
 
-                    data.write_csvs(tempdir, skip_data = False) #write annotations
+                #     data.write_csvs(tempdir, skip_data = False) #write annotations
 
-                    #df = data.AnnData.to_df() #returns a pandas df
-                    #csvpath = tempdir + '/' + path.stem + '_gex.csv'
-                    #df.to_csv(csvpath) #write gene expression matrix
+                #     #df = data.AnnData.to_df() #returns a pandas df
+                #     #csvpath = tempdir + '/' + path.stem + '_gex.csv'
+                #     #df.to_csv(csvpath) #write gene expression matrix
 
 
-                    #st.write(os.listdir(tempdir))
+                #     #st.write(os.listdir(tempdir))
                     
-                    #st.write(path)
-                    outfilename = shutil.make_archive("/tmp/" + path.stem, 'zip', tempdir)
-                    #st.write(os.listdir('/tmp'))
-                    #st.write(outfilename)
-                    return outfilename
+                #     #st.write(path)
+                #     outfilename = shutil.make_archive("/tmp/" + path.stem, 'zip', tempdir)
+                #     #st.write(os.listdir('/tmp'))
+                #     #st.write(outfilename)
+                #     return outfilename
             
-            elif self.outformat == 'txt':
-                self.txt_file_write(data, self.sep)
-                return self.outfile
+            elif self.outext == 'txt':
+                return self.txt_sep_write(data, self.sep)
 
-            elif self.outformat == 'h5ad':
-                data.write_h5ad(self.outfile)
-                st.write(f'self.outfile is {self.outfile}')
-                st.write(os.getcwd())
-                st.write(os.listdir(os.getcwd()))
-                return self.outfile
+            elif self.outext == 'h5ad':
+                return data.write_h5ad(self.outpath)
+                # st.write(f'self.outfile is {self.outfile}')
+                # st.write(os.getcwd())
+                # st.write(os.listdir(os.getcwd()))
+                # return self.outpath
 
-            elif self.outformat == 'mtx':
+            elif self.outext == 'mtx':
                 # to mtx outfile format
                 return self.mtx_file_write(data)
 
-            elif self.outformat == 'loom':
-                data.write_loom(self.outfile)
+            elif self.outext == 'loom':
+                return data.write_loom(self.outfile)
 
-            elif self.outformat == 'tsv':
-                with tempfile.TemporaryDirectory() as tempdir:
-                    #st.write(tempdir)
+            elif self.outext == 'tsv':
+                return self.txt_sep_write(data, '\t')
+            #     with tempfile.TemporaryDirectory() as tempdir:
+            #         #st.write(tempdir)
                     
-                    data.write_csvs(tempdir, skip_data = False, sep = '\t')
-                    #st.write(os.listdir(tempdir))
-                    for tempd, subdirs, tempfiles in os.walk(tempdir):
-                        #maybe print statements?
-                        for tempf in tempfiles:
-                            temppath = os.path.join(tempd, tempf)
-                            root, ext = os.path.splitext(temppath)
-                            #st.write(f'{temppath} {tempf} {root} {ext}')
-                            if ext == '.csv':
-                                os.rename(temppath, root + '.tsv') #path.stem instead of os.path.basename?
-                    path= Path(self.infilename)
-                    #st.write(path)
-                    outfilename = shutil.make_archive("/tmp/" + path.stem, 'zip', tempdir)
-                    #st.write(os.listdir('/tmp'))4
-                    #st.write(outfilename)
-                    #have to rename all csv files to tsv
+            #         data.write_csvs(tempdir, skip_data = False, sep = '\t')
+            #         #st.write(os.listdir(tempdir))
+            #         for tempd, subdirs, tempfiles in os.walk(tempdir):
+            #             #maybe print statements?
+            #             for tempf in tempfiles:
+            #                 temppath = os.path.join(tempd, tempf)
+            #                 root, ext = os.path.splitext(temppath)
+            #                 #st.write(f'{temppath} {tempf} {root} {ext}')
+            #                 if ext == '.csv':
+            #                     os.rename(temppath, root + '.tsv') #path.stem instead of os.path.basename?
+            #         path= Path(self.infilename)
+            #         #st.write(path)
+            #         outfilename = shutil.make_archive("/tmp/" + path.stem, 'zip', tempdir)
+            #         #st.write(os.listdir('/tmp'))4
+            #         #st.write(outfilename)
+            #         #have to rename all csv files to tsv
                     
-                    #os.walk
-                    #gives list of files
-                    # for every file:
-                    #     if suffix = csv:
-                    #         os.rename(csv file, path.stem + tsv)
-                    return outfilename
+            #         #os.walk
+            #         #gives list of files
+            #         # for every file:
+            #         #     if suffix = csv:
+            #         #         os.rename(csv file, path.stem + tsv)
+            #         return outfilename
             
-            #return self.outfile
+            # #return self.outfile
             
 
         except Exception as e:
             st.error(f'Error converting file: {e}')
+
+def write_uploaded_fileobj(in_dir, file_name, ext, mode, file_obj):
+    if file_name[-1] != '.' and ext[0] != '.':
+        ext = '.' + ext
+    fpath = os.path.join(in_dir, file_name + ext)
+    f = open(fpath, mode)
+    f.write(file_obj.getbuffer())
+    f.close()
+    return fpath
 
 def run(): #main() analog for st
     ''' Generate the applicaton interface, with a title and welcome message for user, along with other instructions. '''
@@ -222,7 +246,7 @@ def run(): #main() analog for st
         Currently supported formats are: csv, tsv, txt, h5ad, and loom. 
         Excel (xslx) and hdf5 (h5) files are only supported on input.
         MTX is a work in progress. 
-        Get started by uploading your file below. Download button is not operational currently.''')
+        Get started by uploading your file below.''')
         
     st.write('Larger files may take a while, depending on your internet speeds.')
         
@@ -232,43 +256,58 @@ def run(): #main() analog for st
     input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx', 'h5ad', 'loom', 'xslx', 'h5', 'tsv', 'zip'])
     if input_file is not None:
         sep = None
-        #import tempfile
-        #create temp directory
         input_ext = os.path.splitext(input_file.name)[1][1:].lower()
-        st.write(input_ext)
+        #st.write(input_ext)
         if input_ext == 'mtx':
             gfile = st.file_uploader('Upload your tsv file containing annotated genes corresponding to the uploaded mtx file', type = ['tsv'])
             cfile = st.file_uploader('Upload your tsv file containing cell barcodes corresponding to the uploaded mtx file', type = ['tsv'])
         
-        output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx', 'loom', 'h5ad', 'tsv'])
+        output_ext = st.selectbox("Select output format", ['csv', 'txt', 'mtx', 'loom', 'h5ad', 'tsv'])
+        
+        if output_ext == 'txt':
+            separator_selection = st.selectbox('Select separator for data:', ['1 space', '2 spaces', '3 spaces'])
+            if separator_selection == '1 space':
+                sep = ' '
+            elif separator_selection == '2 spaces':
+                sep = '  '
+            elif separator_selection == '3 spaces':
+                sep = '   '
+        
         if st.button("Convert File"):
-            converted_files = []
+            #converted_files = []
             with tempfile.TemporaryDirectory() as tempdir:
+                # make sub-directory to save uploaded file(s) in
+                in_dirpath = os.path.join(tempdir, "in")
+                if not os.path.exists(in_dirpath):
+                    os.makedirs(in_dirpath)
+                
+                # make sub-directory to save converted file(s) in
+                out_dirpath = os.path.join(tempdir, "out")
+                if not os.path.exists(out_dirpath):
+                    os.makedirs(out_dirpath)
+                st.write(f'BEFORE: Input Dir: {in_dirpath}')
+                st.write(os.listdir(in_dirpath))
+                
+                st.write(f'BEFORE: Output Dir: {out_dirpath}')
+                st.write(os.listdir(out_dirpath))
+
                 if input_ext == 'mtx':
                     #gfile = st.file_uploader('Upload your tsv file containing annotated genes corresponding to the uploaded mtx file', type = ['tsv'])
                     #cfile = st.file_uploader('Upload your tsv file containing cell barcodes corresponding to the uploaded mtx file', type = ['tsv'])
                     if gfile is not None and cfile is not None:
-                        f = open(tempdir + '/matrix.mtx', 'wb')
-                        f.write(input_file.getbuffer())
-                        f.close() #necessary?
+                        write_uploaded_fileobj(in_dirpath, 'matrix', '.mtx', 'wt', input_file)
+                        write_uploaded_fileobj(in_dirpath, 'genes', '.tsv', 'wt', input_file)
+                        write_uploaded_fileobj(in_dirpath, 'barcodes', '.tsv', 'wt', input_file)
 
-                        gf = open(tempdir + '/genes.tsv', 'wb')
-                        gf.write(gfile.getbuffer())
-                        gf.close()
-
-                        cf = open(tempdir + '/barcodes.tsv', 'wb')
-                        cf.write(cfile.getbuffer())
-                        cf.close()
-
-                        converter = FileConverter(tempdir, input_ext, input_file.name, f.name, output_format, sep)
-                        converted_files.append(converter.convert_file())
+                        converter = FileConverter(in_dirpath, input_ext, input_file.name, out_dirpath, output_ext, sep)
+                        converter.convert_file()
                 elif input_ext == 'zip':
                     #st.write('input extension is zip, line 262')
                     with ZipFile(input_file) as myzip:
-                        myzip.extractall(tempdir)
+                        myzip.extractall(in_dirpath)
                         #walk tempdir recursively
                     #st.write(os.listdir(tempdir))
-                    for root, dirs, files in os.walk(tempdir): #this should walk dirs recursively?
+                    for root, dirs, files in os.walk(in_dirpath): #this should walk dirs recursively?
                         #st.write(f'{root} {dirs} {files}')
                         for filename in files:
                             #st.write('\n')
@@ -281,15 +320,15 @@ def run(): #main() analog for st
                             #st.write(f'{stem}, {fext}')
 
                             if fext[1:] == 'tsv':
-                                if (re.search('barcodes.tsv', filepath) is not None) or (re.search('genes.tsv', filepath) is not None):
+                                if (re.search('barcodes.tsv$', filepath) is not None) or (re.search('genes.tsv$', filepath) is not None):
                                     # st.write(re.search('barcodes.tsv', filepath))
                                     # st.write(re.search('genes.tsv', filepath))
                                     st.write(f'{filepath} was skipped for conversion because it is presumed to be a barcodes/genes tsv file correlated with an mtx file.')
                             elif fext[1:] in FileConverter.supported_formats:
                                 try:
                                     st.write(f'{filepath} was recognized as a {fext} file. Converting {filepath}...')
-                                    converter = FileConverter(tempdir, fext, filename, filepath, output_format, sep) #filename or filepath?
-                                    converted_files.append(converter.convert_file()) #should instead be adding it to a directory of converted files here?
+                                    converter = FileConverter(filepath, fext, filename, out_dirpath, output_ext, sep) #filename or filepath?
+                                    converter.convert_file()
                                     
                                     st.write(converted_files)
                                 except Exception as e:
@@ -303,67 +342,51 @@ def run(): #main() analog for st
                     #st.write(os.listdir(tempdir))
 
                 else:
-                    f = open(tempdir + '/' + 'tempfile.' + input_ext, 'wb')
-                    f.write(input_file.getbuffer())
-                    f.close()
-                    
-                    converter = FileConverter(tempdir, input_ext, input_file.name, f.name, output_format, sep)
-                    converted_files.append(converter.convert_file())
-
-
-
-            #output_format = st.selectbox("Select output format", ['csv', 'txt', 'mtx', 'loom', 'h5ad', 'tsv'])
+                    infile_path = write_uploaded_fileobj(in_dirpath, 'tempfile', input_ext, 'wb', input_file)
+                    converter = FileConverter(infile_path, input_ext, input_file.name, out_dirpath, output_format, sep)
+                    converter.convert_file()
                 
-            # if output_format == 'txt': #ignore for now
-            #     sep = '\t' #default separator. if used this is essentially a .tsv file
-            #     separator_selection = st.selectbox('Select separator for data (default is tab):', ['Comma', 'Tab', '1 space', '2 spaces', '3 spaces'])
-            #     if separator_selection == 'Comma':
-            #         sep = ','
-            #     elif separator_selection == '1 space':
-            #         sep = ' '
-            #     elif separator_selection == '2 spaces':
-            #         sep = '  '
-            #     elif separator_selection == '3 spaces':
-            #         sep = '   '
-            
-            # if st.button("Convert File"):
-                # converter = FileConverter(tempdir, input_ext, input_file.name, f.name, output_format, sep)
-                # converted_file = converter.convert_file() #will either be a single file or a zip with multiple files
-                if len(converted_files) > 1:
+                out_file_list = os.listdir(out_dirpath)
+                st.write(out_file_list)
+                num_out_files = len(out_file_list)
+
+                # if num_out_files == 0:
+                #     st.error('No file was able to be converted.')
+                #     return
+                converted_filename = None
+                converted_file_path = None
+
+                if num_out_files > 0: # just for printing success message
+                    st.success(f'Successfully converted {num_out_files} files.')
+                
+                if num_out_files > 1:
                     #make available to download all files as zip directory
-                    with tempfile.TemporaryDirectory() as converted_file_directory:
-                        st.write(converted_file_directory)
-                        for converted_file in converted_files:
-                            with open(converted_file_directory + converted_file, 'wb') as f:
-                                f.write(converted_file)
-                        name = input_file.name + '_converted'
-                        outzip = shutil.make_archive(name, 'zip', converted_file_directory)
-                        st.download_button(
-                            label="Download all files as a zipped folder",
-                            #data=filecontent,
-                            data=open(outzip, 'rb'),
-                            #data = converted_file,
-                            file_name=name)
+                    input_path_obj = Path(input_file.name)
+                    #st.write(f'STEM of INPUT_PATH_OBJ: {input_path_obj.stem}')
+                    name = input_path_obj.stem + '_converted'
+                    converted_file_path = shutil.make_archive(name, 'zip', out_dirpath)
+                    #st.write(f'FILENAME returned by MAKE_ARCHIVE: {converted_file_path}')
+                    converted_path_obj = Path(converted_file_path)
+                    converted_filename = converted_path_obj.name
+                    
+                    st.download_button(
+                        label=f"Download {converted_filename}",
+                        data=open(converted_file_path, 'rb'),
+                        file_name=converted_filename)
+                    
+                    st.write('Or, download each file individually below:')
 
-
-                
-                if len(converted_files) != 0:
-                    for key, converted_file in enumerate(converted_files):
-                        st.write(converted_file)
-                        path = Path(converted_file)
-                        st.success(f'File converted successfully. Output file: {path.name}')
-                            #from io import BytesIO
-                            #filecontent = BytesIO(open(converter.outfile, 'rb').read())
-                            #with open(converter.outfile, 'rb') as file:
-                                #filecontent = file.read()
+                if num_out_files != 0:
+                    for key, out_file in enumerate(out_file_list):
+                        #st.write(converted_file)
+                        converted_file_path = os.path.join(out_dirpath, out_file)
                             
                         st.download_button(
-                            label=f"Download {path.name}",
-                            #data=filecontent,
-                            data=open(converted_file, 'rb'),
-                            #data = converted_file,
-                            file_name=path.name,
-                            key = key)
+                            label=f"Download {out_file}",
+                            data=open(converted_file_path, 'rb'),
+                            file_name=out_file,
+                            key=key)
+                
                 else:
                     st.error('No file was able to be converted.')
 if __name__ == '__main__':
