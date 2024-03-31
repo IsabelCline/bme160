@@ -9,6 +9,7 @@ from pathlib import Path
 from scipy.io import mmwrite
 from zipfile import ZipFile
 import pandas as pd 
+import loompy
 import re
 
 def swap_file_ext(dir, old_ext, new_ext):
