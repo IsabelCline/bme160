@@ -245,18 +245,20 @@ def run(): #main() analog for st
     st.title('Single-Cell Gene Expression Data File Converter')
     st.write(
         '''Welcome to the single cell gene expression data
-        file converter. Your file should store a 2D matrix with cells in the rows and genes in the columns (ie. something 
+        file converter. Your file(s) should store a 2D matrix with cells in the rows and genes in the columns (ie. something 
         like a .tsv file that contains only gene names is not suitable for this program). 
-        Currently supported formats are: csv, tsv, txt, h5ad, and loom. 
-        Excel (xslx) and hdf5 (h5) files are only supported on input.
-        MTX is a work in progress. 
+        Currently fully-supported formats are: csv, tsv, txt, h5ad, and loom. 
+        Excel (xslx) and hdf5 (h5) files are currently only supported on input.
         Get started by uploading your file below.''')
         
-    st.write('Larger files may take a while, depending on your internet speeds.')
+    st.write('Larger files may take a while, depending on your internet speeds, and can potentially crash the program.')
         
     st.write('''If you are trying to convert an mtx file into another format, you will be prompted to upload your gene 
     and cell/barcode tsv files after uploading your mtx file.
     These should have the same prefix as the mtx file.''')
+
+    st.write('''You may also upload a zipped file containing one or more files to be converted.
+    Any files sharing the same name will be made unique by the file converter so that data does not get overwritten.''')
     input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx', 'h5ad', 'loom', 'xslx', 'h5', 'tsv', 'zip'])
     if input_file is not None:
         sep = None
@@ -327,7 +329,7 @@ def run(): #main() analog for st
                                 if (re.search('barcodes.tsv$', filepath) is not None) or (re.search('genes.tsv$', filepath) is not None) or (re.search('features.tsv$', filepath) is not None):
                                     # st.write(re.search('barcodes.tsv', filepath))
                                     # st.write(re.search('genes.tsv', filepath))
-                                    st.write(f'{filepath} was skipped for conversion because it is presumed to be a barcodes/genes tsv file correlated with an mtx file.')
+                                    st.warning(f'{filepath} was skipped for conversion because it is presumed to be a barcodes/genes tsv file correlated with an mtx file.')
                             elif fext[1:] in FileConverter.supported_formats:
                                 try:
                                     st.write(f'{filepath} was recognized as a {fext} file. Converting {filepath}...')
@@ -341,7 +343,7 @@ def run(): #main() analog for st
                             #elif fext == 'mtx':
                                 #try:
                             else:
-                                st.write(f'{filepath} was skipped for conversion because it is not a supported format.')
+                                st.warning(f'{filepath} was skipped for conversion because it is not a supported format.')
 
                     #st.write(os.listdir(tempdir))
 
