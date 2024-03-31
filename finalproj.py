@@ -150,7 +150,7 @@ class FileConverter:
                 i += 1
             self.outpath = uniq_outpath
 
-            st.write(f' -> Writing converted file: "{self.outpath}" Output format: "{self.outformat}"')
+            st.write(f' -> Writing converted file: "{self.outpath}" Output format: "{self.outext}"')
             #writing
             if self.outext == 'csv':
                 self.txt_sep_write(data, ',')
@@ -330,7 +330,7 @@ def run(): #main() analog for st
                                     converter = FileConverter(filepath, fext, filename, out_dirpath, output_ext, sep) #filename or filepath?
                                     converter.convert_file()
                                     
-                                    st.write(converted_files)
+                                    #st.write(converted_files)
                                 except Exception as e:
                                     st.error(f'Error converting file: {e}. File {filename} was not able to be converted.')
 
