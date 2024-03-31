@@ -124,7 +124,7 @@ class FileConverter:
                     self.inpath = os.path.dirname(self.inpath)
                 # find prefix
                 prefix = re.split("matrix.mtx", self.infilename)[0]
-                #st.write(prefix)
+                st.write(prefix)
                 if prefix != '':
                     data = sc.read_10x_mtx(self.inpath, prefix = prefix)
                 else:
