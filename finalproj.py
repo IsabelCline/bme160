@@ -190,7 +190,7 @@ class FileConverter:
                 return self.mtx_file_write(data)
 
             elif self.outext == 'loom':
-                return data.write_loom(self.outfile)
+                return data.write_loom(self.outpath)
 
             elif self.outext == 'tsv':
                 return self.txt_sep_write(data, '\t')
