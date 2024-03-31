@@ -1,3 +1,4 @@
 scanpy==1.9.8
 streamlit==1.28.1
 anndata==0.10.6
+loompy==3.0.7
