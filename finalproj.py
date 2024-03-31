@@ -329,10 +329,10 @@ def run(): #main() analog for st
                                 if (re.search('barcodes.tsv$', filepath) is not None) or (re.search('genes.tsv$', filepath) is not None) or (re.search('features.tsv$', filepath) is not None):
                                     # st.write(re.search('barcodes.tsv', filepath))
                                     # st.write(re.search('genes.tsv', filepath))
-                                    st.warning(f'{filepath} was skipped for conversion because it is presumed to be a barcodes/genes tsv file correlated with an mtx file.')
+                                    st.warning(f'{filename} was skipped for conversion because it is presumed to be a barcodes/genes tsv file correlated with an mtx file.')
                             elif fext[1:] in FileConverter.supported_formats:
                                 try:
-                                    st.write(f'{filepath} was recognized as a {fext} file. Converting {filepath}...')
+                                    st.write(f'{filename} was recognized as a {fext} file. Converting {filename}...')
                                     converter = FileConverter(filepath, fext, filename, out_dirpath, output_ext, sep) #filename or filepath?
                                     converter.convert_file()
                                     
@@ -343,7 +343,7 @@ def run(): #main() analog for st
                             #elif fext == 'mtx':
                                 #try:
                             else:
-                                st.warning(f'{filepath} was skipped for conversion because it is not a supported format.')
+                                st.warning(f'{filename} was skipped for conversion because it is not a supported format.')
 
                     #st.write(os.listdir(tempdir))
 
