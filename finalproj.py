@@ -12,6 +12,8 @@ import pandas as pd
 import loompy
 import re
 
+st.set_page_config(page_title='Single-Cell Gene Expression Data File Converter', page_icon=None, layout="centered")
+
 def swap_file_ext(dir, old_ext, new_ext):
     for dpath, subdirs, tempfiles in os.walk(dir):
         for fname in tempfiles:
@@ -322,7 +324,7 @@ def run(): #main() analog for st
                             #st.write(f'{stem}, {fext}')
 
                             if fext[1:] == 'tsv':
-                                if (re.search('barcodes.tsv$', filepath) is not None) or (re.search('genes.tsv$', filepath) is not None):
+                                if (re.search('barcodes.tsv$', filepath) is not None) or (re.search('genes.tsv$', filepath) is not None) or (re.search('features.tsv$', filepath):
                                     # st.write(re.search('barcodes.tsv', filepath))
                                     # st.write(re.search('genes.tsv', filepath))
                                     st.write(f'{filepath} was skipped for conversion because it is presumed to be a barcodes/genes tsv file correlated with an mtx file.')
