@@ -158,7 +158,7 @@ class FileConverter:
                 i += 1
             self.outpath = uniq_outpath
 
-            st.write(f' -> Writing converted file: "{self.outpath}" Output format: "{self.outext}"')
+            #st.write(f' -> Writing converted file: "{self.outpath}" Output format: "{self.outext}"')
             #writing
             if self.outext == 'csv':
                 return self.txt_sep_write(data, ',')
