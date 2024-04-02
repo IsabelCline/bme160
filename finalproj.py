@@ -255,9 +255,11 @@ def run(): #main() analog for st
 
                 if input_ext == 'mtx':
                     if gfile is not None and cfile is not None:
-                        write_uploaded_fileobj(in_dirpath, 'matrix', '.mtx', 'wb', input_file)
-                        write_uploaded_fileobj(in_dirpath, 'genes', '.tsv', 'wb', input_file)
-                        write_uploaded_fileobj(in_dirpath, 'barcodes', '.tsv', 'wb', input_file)
+                        prefix = re.split("matrix.mtx", input_file.name)[0]
+                        st.write(prefix)
+                        write_uploaded_fileobj(in_dirpath, prefix + 'matrix', '.mtx', 'wb', input_file)
+                        write_uploaded_fileobj(in_dirpath, prefix + 'genes', '.tsv', 'wb', input_file)
+                        write_uploaded_fileobj(in_dirpath, prefix + 'barcodes', '.tsv', 'wb', input_file)
                         st.write(os.listdir(in_dirpath))
                         converter = FileConverter(in_dirpath, input_ext, input_file.name, out_dirpath, output_ext, sep)
                         converter.convert_file()
