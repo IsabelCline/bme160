@@ -213,7 +213,8 @@ def run(): #main() analog for st
     These should have the same prefix as the mtx file.''')
 
     st.write('''You may also upload a zipped file containing one or more files to be converted.
-    Any files sharing the same name will be made unique by the file converter so that data does not get overwritten.''')
+    For best results, please ensure that every file has a unique name, but
+    any files sharing the same name should be made unique by the file converter so that data does not get overwritten.''')
     input_file = st.file_uploader("Upload a file", type=['csv', 'txt', 'mtx', 'h5ad', 'loom', 'xslx', 'h5', 'tsv', 'zip'])
     if input_file is not None:
         sep = None
