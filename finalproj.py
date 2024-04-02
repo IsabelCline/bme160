@@ -223,7 +223,7 @@ def run(): #main() analog for st
         if input_ext == 'mtx':
             gfile = st.file_uploader('Upload your tsv file containing annotated genes corresponding to the uploaded mtx file', type = ['tsv'])
             cfile = st.file_uploader('Upload your tsv file containing cell barcodes corresponding to the uploaded mtx file', type = ['tsv'])
-        
+        st.write(f'{input_file.name}{gfile.name}{cfile.name}')
         output_ext = st.selectbox("Select output format", ['csv', 'txt', 'mtx', 'loom', 'h5ad', 'tsv'])
         
         if output_ext == 'txt':
