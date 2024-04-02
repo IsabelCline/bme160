@@ -300,7 +300,7 @@ def run(): #main() analog for st
 
                 else:
                     infile_path = write_uploaded_fileobj(in_dirpath, 'tempfile', input_ext, 'wb', input_file)
-                    converter = FileConverter(infile_path, input_ext, input_file.name, out_dirpath, output_format, sep)
+                    converter = FileConverter(infile_path, input_ext, input_file.name, out_dirpath, output_ext, sep)
                     converter.convert_file()
                 
                 out_file_list = os.listdir(out_dirpath)
