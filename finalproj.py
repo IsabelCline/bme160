@@ -133,8 +133,8 @@ class FileConverter:
                 prefix = re.split("matrix.mtx", self.infilename)[0]
                 st.write(prefix)
                 if prefix != '':
+                    st.write('prefix is not none')
                     data = sc.read_10x_mtx(self.inpath, prefix = prefix)
-                    st.write(data)
                 else:
                     data = sc.read_10x_mtx(self.inpath)
             
