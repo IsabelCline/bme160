@@ -63,12 +63,12 @@ class FileConverter:
             mmwrite(f, data.X.T)
             #st.write('Called mmwrite')
         with open(genes_filename, 'wb') as genes, open(barcodes_filename, 'wb') as cells:
-            feature = data.var["feature_types"] if data.var.get("feature_types") else "Gene Expression"
+            feature = data.var["feature_types"] if data.var.get("feature_types") is not None else "Gene Expression"
             # write genes
-            if data.var.get("gene_ids"):
+            if data.var.get("gene_ids") is not None:
                 pd.DataFrame({0: data.var["gene_ids"], 1: data.var_names, 2: "Gene Expression"}
                     ).to_csv(genes, sep="\t", index=False, header=False)
-            elif data.var.get("gene_symbols"):
+            elif data.var.get("gene_symbols") is not None:
                 pd.DataFrame({0: data.var_names, 1: data.var["gene_symbols"], 2: "Gene Expression"}
                     ).to_csv(genes, sep="\t", index=False, header=False)
             else:
