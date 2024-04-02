@@ -135,6 +135,7 @@ class FileConverter:
                 if prefix != '':
                     st.write('prefix is not none')
                     data = sc.read_10x_mtx(self.inpath, prefix = prefix)
+                    st.write('read data')
                 else:
                     data = sc.read_10x_mtx(self.inpath)
             
