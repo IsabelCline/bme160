@@ -129,13 +129,11 @@ class FileConverter:
                 if not os.path.isdir(self.inpath):
                     self.inpath = os.path.dirname(self.inpath)
                 # find prefix
-                st.write(self.inpath)
+                #st.write(self.inpath)
                 prefix = re.split("matrix.mtx", self.infilename)[0]
-                st.write(prefix)
+                #st.write(prefix)
                 if prefix != '':
-                    st.write('prefix is not none')
-                    data = sc.read_10x_mtx(self.inpath, prefix = prefix)
-                    st.write('read data')
+                    data = sc.read_10x_mtx(self.inpath, prefix = prefix) #error happening here
                 else:
                     data = sc.read_10x_mtx(self.inpath)
             
@@ -258,11 +256,11 @@ def run(): #main() analog for st
                 if input_ext == 'mtx':
                     if gfile is not None and cfile is not None:
                         prefix = re.split("matrix.mtx", input_file.name)[0]
-                        st.write(prefix)
+                        #st.write(prefix)
                         write_uploaded_fileobj(in_dirpath, prefix + 'matrix', '.mtx', 'wb', input_file)
                         write_uploaded_fileobj(in_dirpath, prefix + 'genes', '.tsv', 'wb', input_file)
                         write_uploaded_fileobj(in_dirpath, prefix + 'barcodes', '.tsv', 'wb', input_file)
-                        st.write(os.listdir(in_dirpath))
+                        #st.write(os.listdir(in_dirpath))
                         converter = FileConverter(in_dirpath, input_ext, input_file.name, out_dirpath, output_ext, sep)
                         converter.convert_file()
                 elif input_ext == 'zip':
