@@ -246,11 +246,11 @@ def run(): #main() analog for st
                 out_dirpath = os.path.join(tempdir, "out")
                 if not os.path.exists(out_dirpath):
                     os.makedirs(out_dirpath)
-                st.write(f'BEFORE: Input Dir: {in_dirpath}')
-                st.write(os.listdir(in_dirpath))
+                #st.write(f'BEFORE: Input Dir: {in_dirpath}')
+                #st.write(os.listdir(in_dirpath))
                 
-                st.write(f'BEFORE: Output Dir: {out_dirpath}')
-                st.write(os.listdir(out_dirpath))
+                #st.write(f'BEFORE: Output Dir: {out_dirpath}')
+                #st.write(os.listdir(out_dirpath))
 
                 if input_ext == 'mtx':
                     if gfile is not None and cfile is not None:
@@ -304,7 +304,7 @@ def run(): #main() analog for st
                     converter.convert_file()
                 
                 out_file_list = os.listdir(out_dirpath)
-                st.write(out_file_list)
+                #st.write(out_file_list)
                 num_out_files = len(out_file_list)
 
                 converted_filename = None
